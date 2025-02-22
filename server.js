@@ -285,17 +285,23 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-app.get('/checkloggedin', async (req, res) => {
-    console.log('checkloggedin route hit');  // Add this to verify if the route is being accessed
-    if (req.user) {
-        return res.status(200).json({ 
-            message: 'You are already logged in. Redirecting to the main page...',
-            redirectUrl: '/main.html',
-        });
+export default async (req, res) => {
+    console.log('checkloggedin route hit');  // To check if the function is triggered
+
+    if (req.method === 'GET') {
+        if (req.user) {
+            return res.status(200).json({ 
+                message: 'You are already logged in. Redirecting to the main page...',
+                redirectUrl: '/main.html',
+            });
+        } else {
+            return res.status(200).json({ message: 'No jwt yet' });
+        }
     } else {
-        return res.status(200).json({ message: 'No jwt yet' });
+        // Handle other methods (e.g., POST, PUT) if necessary
+        return res.status(405).json({ message: 'Method Not Allowed' });
     }
-});
+};
 
 
 app.post('/login', async (req, res) => {
