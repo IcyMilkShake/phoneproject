@@ -155,246 +155,29 @@
         });
 
         async function checkloggedin() {
-            try {
-                const response = await fetch('/checkloggedin', {
-                    credentials: 'include'
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert(data.message)
-                    window.location.href = 'main.html';
-                } else {
-                    console.error('Error checking login status');
-                }
-            } catch (error) {
-                console.error('Error checking login status:', error);
-            }
-        }
-        checkloggedin();
-    </script>
-</body>
-</html>
-<!--
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-signin-client_id" content="853541446710-oe4bjgt4pvma4gbrjtoal4akdses7ivv.apps.googleusercontent.com">
-    <title>Signup</title>
-    <script src="script.js" defer></script>
-    <style>
-        body {
-            background-image: url('sea_bg.PNG');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .background {
-            border-radius: 25px;
-            width: 60%;
-            height: 60%;
-            background-color: rgba(128, 128, 128, 0.85);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 5%;
-            box-sizing: border-box;
-        }
-        .textboxscale {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 2%;
-            margin: 10px 0;
-            font-size: 3vh;
-        }
-        .password, .username, .email {
-            position: absolute;
-            margin-left: 15%;
-            margin-right: 15%;
-            width: 50vw;
-            text-overflow: ellipsis;
-        }
-        .submit {
-            width: 50%;
-            font-size: 3vh;
-            cursor: pointer;
-            position: absolute;
-            top: 71%;
-            appearance: none;
-            border: none;
-        }
-        .loginRedirect {
-            width: 50%;
-            font-size: 3vh;
-            cursor: pointer;
-            position: absolute;
-            top: 83%;
-            appearance: none;
-            border: none;
-        }
-        .googleRedirect {
-            width: 50%;
-            font-size: 3vh;
-            cursor: pointer;
-            position: absolute;
-            top: 91%;
-            appearance: none;
-            border: none;
-        }
-        .username {
-            position: absolute;
-            top: 15%;
-        }
-        .email {
-            position: absolute;
-            top: 32%;
-        }
-        .password {
-            position: absolute;
-            top: 49%;
-        }
-        p {
-            font-family: sans-serif;
-            color: rgb(2, 73, 165);
-            position: absolute;
-            top: 76%;
-            font-size: 1.5vh;
-            white-space: nowrap;
-        }
-    </style>
-</head>
-<body>
-    <div class="background">
-        <div class="g-signin2 textboxscale" data-onsuccess="onSignIn"></div>
-        <input id="username" type="text" class="textboxscale username" placeholder="Enter Username" autocomplete="username">
-        <input id="email" type="email" class="textboxscale email" placeholder="Enter Email" autocomplete="email">
-        <input id="password" type="password" class="textboxscale password" placeholder="Enter Password" autocomplete="current-password">
-        <button id="submit" class="submit">Signup</button>
-        <p>If you already have an account</p>
-        <button id="loginRedirect" class="loginRedirect">Login</button>
-    </div>
-
-    <script>
-
-        const loginRedirect = document.getElementById('loginRedirect');
-        loginRedirect.addEventListener('click', () => {
-            window.location.href = 'login.html'; 
+    try {
+        const response = await fetch('/checkloggedin', {
+            method: 'GET',
+            credentials: 'include',  // Ensure cookies are sent with the request
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
 
-        async function checkloggedin() {
-            try {
-                const response = await fetch('/checkloggedin', {
-                    credentials: 'same-origin'
-                });
+        const data = await response.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    window.location.href = 'main.html';
-                } else {
-                    console.error('Error checking login status');
-                }
-            } catch (error) {
-                console.error('Error checking login status:', error);
-            }
+        if (response.ok) {
+            alert(data.message);
+            window.location.href = 'main.html';
+        } else {
+            console.error('Error checking login status');
         }
-        checkloggedin();
+    } catch (error) {
+        console.error('Error checking login status:', error);
+    }
+}
+checkloggedin();
+
     </script>
 </body>
 </html>
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup</title>
-    <script src="./script.js" defer></script>
-    <style>
-        .textboxscale {
-            width: 40%;
-            max-width: 1000px;
-            max-height: 100px;
-            box-sizing: border-box;
-            padding: 25px;
-        }
-        .buttonscale {
-            width: 80%;
-            max-width: 400px;
-            max-height: 75px;
-        }
-        .button {
-            width: 90%;
-            font-size: 4vh;
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            bottom: 25vh;
-            cursor: pointer;
-        }
-        .password, .username, .email{
-            font-size: 4vh;
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .background {
-            opacity: 85%;
-            border-radius: 25px;
-            width: 60%;
-            height: 60%;
-            background-color: gray;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-
-        }
-        body {
-            background-image: url('sea_bg.PNG');
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat; 
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* Full height */
-        }      
-        .password { bottom: 34vh; }
-        .username { bottom: 60vh; }
-        .email { bottom: 47vh; }
-        .loginRedirect {
-            position: fixed;
-        }
-    </style>
-</head>
-<body>
-    <div class="background"></div>
-    <input id="username" type="text" class="username textboxscale" placeholder="Enter Username" autocomplete="username">
-    <input id="email" type="email" class="email textboxscale" placeholder="Enter Email" autocomplete="email">
-    <input id="password" type="password" class="password textboxscale" placeholder="Enter Password" autocomplete="current-password">
-    <button id="submit" class="button buttonscale">Signup</button>
-    <button id="loginRedirect">Login</button>
-
-    <script>
-        const loginRedirect = document.getElementById('loginRedirect');
-        loginRedirect.addEventListener('click', () => {
-            window.location.href = 'login.html'; // Redirect to login page
-        });
-    </script>
-</body>
-</html>
--->
