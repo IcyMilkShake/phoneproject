@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const session = require('express-session');
 const User = require('./collection.js'); // Your User model
 const Counter = require('./counter.js'); // Your Counter model
 const Note = require('./note.js'); // Your Note model
@@ -15,7 +14,29 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const app = express();
 const PORT = 8080;
+const jwt = require('jsonwebtoken');
 
+// Middleware to check if the token is valid
+function authenticateToken(req, res, next) {
+    // Get token from the Authorization header
+    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Bearer <token>
+
+    if (!token) {
+        return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    // Verify the token with the secret key
+    jwt.verify(token, 'angriestbird', (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid token' });
+        }
+
+        // If token is valid, attach user info to the request
+        req.user = user;
+        next();  // Proceed to the next middleware or route handler
+    });
+}
+const JWT_SECRET = 'angriestbird'
 
 app.use(express.json());
 app.use(cors());
@@ -25,17 +46,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());  // Middleware to parse cookies
 
-// Set up session middleware
-app.use(session({
-    secret: 'angriestbird',  // Change this to a secure random string
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,  // Set to true in production if using HTTPS
-        maxAge: 24 * 60 * 60 * 1000  // Cookie expiration: 1 day
-    }
-}));
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, 'uploads/profile_pics'));
@@ -83,7 +93,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
 
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
-        const userId = req.session.user.userId;
+        const userId = req.user.userId;
     
         try {
             const existingSetting = await Setting.findOne({ userId: userId });
@@ -93,7 +103,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 const secret = speakeasy.generateSecret();
                 const otpauthUrl = speakeasy.otpauthURL({
                     secret: secret.base32,
-                    label: `API:${req.session.user.name}`,
+                    label: `API:${req.user.name}`,
                     issuer: 'API'
                 });
     
@@ -149,10 +159,10 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         }
     });
 app.get('/appearances', async (req, res) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).json({ message: 'User not logged in' });
     }
-    const userId = req.session.user.userId;
+    const userId = req.user.userId;
     const existingSetting = await Setting.findOne({ userId: userId });
 
     if (!existingSetting) {
@@ -164,12 +174,12 @@ app.get('/appearances', async (req, res) => {
         await newSetting.save();
     }
 
-    const settings = await Setting.findOne({ userId: req.session.user.userId });
+    const settings = await Setting.findOne({ userId: req.user.userId });
     res.json({ light: settings.light, midnight: settings.midnight });
 });
 app.post('/updappearance', async (req, res) => {
     const { light, midnight } = req.body;
-    const userId = req.session.user.userId;
+    const userId = req.user.userId;
 
     try {
         const existingSetting = await Setting.findOne({ userId: userId });
@@ -218,11 +228,11 @@ app.post('/send-email', (req, res) => {
 // API endpoint to fetch users
 app.get('/users', async (req, res) => {
     try {
-        if (!req.session.user) {
+        if (!req.user) {
             return res.json({ message: 'Please Login First' });
         }
 
-        const user = await User.findOne({ userId: req.session.user.userId });
+        const user = await User.findOne({ userId: req.user.userId });
         if (user) {
             res.json({ userId: user.userId, name: user.name });
         } else {
@@ -252,10 +262,10 @@ app.post('/signup', async (req, res) => {
         }
 
         const userId = await getNextSequenceValue('userId');
-        
+
         // Set the default profile picture path
         const defaultProfilePicture = '/uploads/profile_pics/default-profile.png'; // Default image path
-        
+
         const newUser = new User({
             userId,
             name,
@@ -268,12 +278,12 @@ app.post('/signup', async (req, res) => {
         res.status(201).json({ message: 'User created successfully!' });
     } catch (error) {
         console.error('Error creating user:', error);
-        res.status(500).json({ message: 'Internal server error', error: error.message });
+        res.status(500).json({ message: 'Error creating user', error: error.message });
     }
 });
 
 app.get('/checkloggedin', async (req,res) => {
-    if (req.session.user) {
+    if (req.user) {
         return res.status(200).json({ 
             message: 'You are already logged in. Redirecting to the main page...',
             redirectUrl: '/main.html' // The page you want to redirect to
@@ -336,7 +346,7 @@ app.post('/login', async (req, res) => {
         }
 
         // If we get here, either 2FA is disabled or the token was valid
-        req.session.user = user; // Set the user in the session
+        const token = jwt.sign({ userId: user.userId, name: user.name }, 'angriestbird', { expiresIn: '1d' });
         res.status(200).json({ 
             message: 'Login successful!', 
             redirectUrl: '/main.html',
@@ -363,8 +373,8 @@ app.post('/check_resetpass', async (req, res) => {
             if (user.email !== email) {
                 return res.status(201).json({ message: 'Wrong email for this username' });
             } else if (user.email === email) {
-                // Store the username in the session for later use
-                req.session.resetpass = name;
+
+                req.resetpass = name;
                 return res.status(200).json({ message: 'Success' });
             }
         }
@@ -377,9 +387,9 @@ app.post('/check_resetpass', async (req, res) => {
 app.post('/reset_resetpass', async (req, res) => {
     const { password } = req.body;
     try {
-        const session_user = req.session.resetpass;
+        const session_user = req.resetpass;
         if (!session_user) {
-            return res.status(400).json({ message: 'No session found, please check your reset password link' });
+            return res.status(400).json({ message: 'No jwt found, please check your reset password link' });
         }
 
         console.log(session_user);
@@ -394,7 +404,7 @@ app.post('/reset_resetpass', async (req, res) => {
         await user.save();
 
         // Clear the session once the password is reset
-        req.session.resetpass = null;
+        req.resetpass = null;
 
         res.status(200).json({ message: 'Password has been changed, returning to login page' });
     } catch (error) {
@@ -408,11 +418,11 @@ app.post('/deleteaccount', async (req, res) => {
 
     try {
         // Ensure session exists
-        if (!req.session.user) {
+        if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized: No session found' });
         }
 
-        const session_user = req.session.user;
+        const session_user = req.user;
         console.log("Session User:", session_user);
 
         const user = await User.findOne({ name: session_user.name });
@@ -435,9 +445,8 @@ app.post('/deleteaccount', async (req, res) => {
         await Setting.deleteMany({ userId: user.userId });
         
 
-        // Destroy session and clear cookies
-        await new Promise((resolve) => req.session.destroy(resolve));
-        res.clearCookie('connect.sid');
+// If you're using a cookie to store the JWT, you can delete it by setting an expired date
+res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
         return res.status(200).json({ message: 'Account deleted successfully' });
 
@@ -449,7 +458,7 @@ app.post('/deleteaccount', async (req, res) => {
 
 
 app.get('/api/notes', async (req, res) => {
-    const user = req.session.user;
+    const user = req.user;
 
     if (!user) {
         return res.status(401).json({ message: 'User not logged in' });
@@ -467,12 +476,12 @@ app.get('/api/notes', async (req, res) => {
 
 // Create a new note
 app.post('/api/notes', async (req, res) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).json({ message: 'User not logged in' });
     }
 
     const { content } = req.body;
-    const userId = req.session.user.userId;
+    const userId = req.user.userId;
 
     const newNote = new Note({
         content,
@@ -492,7 +501,7 @@ app.post('/api/notes', async (req, res) => {
 
 // Update a note
 app.put('/api/notes/:id', async (req, res) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).send('User not logged in');
     }
 
@@ -504,7 +513,7 @@ app.put('/api/notes/:id', async (req, res) => {
     try {
         const note = await Note.findOne({
             _id: req.params.id,
-            userId: req.session.user.userId
+            userId: req.user.userId
         });
 
         if (!note) {
@@ -523,14 +532,14 @@ app.put('/api/notes/:id', async (req, res) => {
 
 
 app.delete('/api/notes/:id', async (req, res) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).send('User not logged in');
     }
 
     try {
         const note = await Note.findOneAndDelete({
             _id: req.params.id,
-            userId: req.session.user.userId
+            userId: req.user.userId
         });
 
         if (!note) {
@@ -572,22 +581,19 @@ app.delete('/notes/mass-delete', async (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ message: 'Failed to log out' });
-        }
-        res.clearCookie('connect.sid');
+// If you're using a cookie to store the JWT, you can delete it by setting an expired date
+res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+
         res.status(200).json({ message: 'Logged out successfully' });
-    });
 });
 
 app.get('/user/profile', async (req, res) => {
     try {
-        if (!req.session.user) {
+        if (!req.user) {
             return res.status(401).json({ message: 'Not logged in' });
         }
 
-        const userId = req.session.user.userId;
+        const userId = req.user.userId;
         const user = await User.findOne({ userId: userId });
 
         if (!user) {
@@ -609,11 +615,11 @@ app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) =>
     }
 
     try {
-        if (!req.session.user) {
+        if (!req.user) {
             return res.status(401).json({ message: 'Not logged in' });
         }
 
-        const userId = req.session.user.userId;
+        const userId = req.user.userId;
         const imagePath = `/uploads/profile_pics/${req.file.filename}`;
 
         const result = await User.findOneAndUpdate(
@@ -635,8 +641,39 @@ app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) =>
 
 app.post('/changeuser', async (req, res) => {
     try {
+        const oldToken = req.cookies.token;  // Assuming JWT is stored in a cookie
+
+        if (!oldToken) {
+            return res.status(401).send('No token provided');
+        }
+    
+        // Step 1: Decode the old JWT to access the current user info
+        jwt.verify(oldToken, process.env.JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(401).send('Invalid or expired token');
+            }
+    
+            // Step 2: Create the new payload with the updated 'user' field
+            const updatedUser = { 
+                ...decoded.user, // Copy existing user info
+                newField: 'newValue' // Add new or modified fields
+            };
+    
+            // Step 3: Create a new token with the updated user information
+            const newToken = jwt.sign(
+                { user: updatedUser },
+                process.env.JWT_SECRET,
+                { expiresIn: '1h' } // Or set your preferred expiration time
+            );
+    
+            // Step 4: Send the new token back to the client (replace old one)
+            res.cookie('token', newToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    
+            return res.status(200).send('User updated successfully');
+        });
+
         const { username } = req.body;
-        const userId = req.session.user.userId;
+        const userId = req.user.userId;
         const user = await User.findOne({ userId: userId });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -646,7 +683,7 @@ app.post('/changeuser', async (req, res) => {
             user.name = username
             await user.save()
             const newuser = await User.findOne({ name: username });
-            req.session.user = newuser; // Store user info in session
+            req.user = newuser; 
             return res.status(201).json({message: "Successfully Changed name"});
         }else{
             return res.status(201).json({message: "Username taken"});
