@@ -2,10 +2,10 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const User = require('../collection.js'); // Your User model
-const Counter = require('../counter.js'); // Your Counter model
-const Note = require('../note.js'); // Your Note model
-const Setting = require('../settingschema.js'); // Your Note model
+const User = require('./collection.js'); // Your User model
+const Counter = require('./counter.js'); // Your Counter model
+const Note = require('./note.js'); // Your Note model
+const Setting = require('./settingschema.js'); // Your Note model
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -702,8 +702,3 @@ app.post('/changeuser', async (req, res) => {
 });
 // Serve static files
 app.use(express.static(path.join(__dirname)));
-
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
