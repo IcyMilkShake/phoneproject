@@ -14,6 +14,7 @@ submit.addEventListener('click', async () => {
         return
     } else if (usernamePattern.test(username.value) == true){
         alert("No special characters are allowed for username, except . and _")
+        return
     } else if (pass.value.length <= 5) {
         alert("Password must be at least 6 letters long");
         return

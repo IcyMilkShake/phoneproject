@@ -75,6 +75,12 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         return nextId;
     }
 
+    mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    }).then(() => console.log('MongoDB connected'))
+    .catch(err => console.error(err));
+
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
         const userId = req.session.user.userId;

@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-signin-client_id" content="853541446710-oe4bjgt4pvma4gbrjtoal4akdses7ivv.apps.googleusercontent.com">
     <title>Signup</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
     <script src="script.js" defer></script>
     <style>
         :root {
@@ -155,7 +157,7 @@
         async function checkloggedin() {
             try {
                 const response = await fetch('/checkloggedin', {
-                    credentials: 'same-origin'
+                    credentials: 'include'
                 });
 
                 const data = await response.json();
