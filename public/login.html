@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="login.js" defer></script>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --card-dark: #1E1E1E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --accent-color: #4A90E2;
+            --hover-color: #5AA0EF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            caret-color: transparent;
+        }
+
+        .background {
+            background-color: var(--card-dark);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .textboxscale {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background-color: #2A2A2A;
+            border: 1px solid #3A3A3A;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .login, .signupRedirect {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        #twoFactorSection {
+            display: none;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #twoFactorSection input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #3A3A3A;
+            background-color: #2A2A2A;
+            color: var(--text-primary);
+        }
+
+        .own, .forgor {
+            color: var(--text-secondary);
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        #qrSection {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div id="loginSection">
+            <input id="username" type="text" class="textboxscale username" placeholder="Enter Username or Email" autocomplete="username">
+            <input id="password" type="password" class="textboxscale password" placeholder="Enter Password" autocomplete="current-password">
+            <button id="login" class="login">Login</button>
+            <p class="own">If you don't already own an account</p>
+            <button id="signupRedirect" class="signupRedirect">Signup</button>
+            <p class="forgor" id="forgotPassword">Forgot Password</p>
+        </div>
+        
+        <!-- 2FA Section -->
+        <div id="qrSection" style="display: none;">
+            <p style="color: var(--text-primary);">Scan this QR code to register 2FA</p>
+            <img id="qrCode" src="" alt="QR Code">
+            <p style="color: var(--text-primary);">Or enter a 6-digit code:</p>
+            <input id="twoFactorCode" type="text" class="textboxscale" maxlength="6" placeholder="Enter Code">
+            <button id="verifyCode" class="button">Verify</button>
+        </div>
+    </div>
+
+    <script>
+
+        document.getElementById('signupRedirect').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('forgotPassword').addEventListener('click', () => {
+            window.location.href = 'forgotpass.html';
+        });
+
+        // Check if already logged in
+        async function checkLoggedIn() {
+            try {
+                const response = await fetch('/checkloggedin', {
+                    credentials: 'same-origin'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = 'main.html';
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        }
+        
+        checkLoggedIn();
+    </script>
+</body>
+</html>
