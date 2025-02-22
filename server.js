@@ -282,18 +282,18 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-app.get('/checkloggedin', async (req,res) => {
+app.get('/checkloggedin', async (req, res) => {
+    console.log('checkloggedin route hit');  // Add this to verify if the route is being accessed
     if (req.user) {
         return res.status(200).json({ 
             message: 'You are already logged in. Redirecting to the main page...',
-            redirectUrl: '/main.html' // The page you want to redirect to
+            redirectUrl: '/main.html',
         });
-    }else{
-        return res.status(200).json({ 
-            message: 'No jwt yet',
-        });
+    } else {
+        return res.status(200).json({ message: 'No jwt yet' });
     }
-})
+});
+
 
 app.post('/login', async (req, res) => {
     const { name, password, email, token } = req.body;
