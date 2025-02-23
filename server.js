@@ -14,6 +14,7 @@ const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const app = express();
+const serverless = require('serverless-http');
 
 
 app.use(express.json());
@@ -25,16 +26,23 @@ app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());  // Middleware to parse cookies
 
 // Set up session middleware
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+
 app.use(session({
-    secret: 'angriestbird',  // Change this to a secure random string
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,  // Set to true in production if using HTTPS
-        maxAge: 24 * 60 * 60 * 1000  // Cookie expiration: 1 day
-    }
+  secret: 'angriestbird',
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: 'mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/API', // Replace with your MongoDB URL
+  }),
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  }
 }));
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, 'uploads/profile_pics'));
