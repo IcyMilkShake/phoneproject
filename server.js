@@ -651,6 +651,5 @@ app.post('/changeuser', async (req, res) => {
 });
 // Serve static files
 app.use(express.static(path.join(__dirname)));
-module.exports = app;
-
-// Start the server
+module.exports = app; // Export the app
+module.exports.handler = serverless(app); // Export for Vercel
