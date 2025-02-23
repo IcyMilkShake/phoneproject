@@ -661,5 +661,5 @@ app.post('/changeuser', async (req, res) => {
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
   });
-module.exports = app; // Export the app
 module.exports.handler = serverless(app); // Export for Vercel
+module.exports = app; // Export the app
