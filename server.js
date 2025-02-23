@@ -14,7 +14,6 @@ const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const app = express();
-const PORT = 8080;
 
 
 app.use(express.json());
@@ -652,8 +651,6 @@ app.post('/changeuser', async (req, res) => {
 });
 // Serve static files
 app.use(express.static(path.join(__dirname)));
+module.exports = app;
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
