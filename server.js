@@ -16,6 +16,8 @@ const qrcode = require('qrcode');
 const app = express();
 const checkLoginRoutes = require("./api/checkloggedin");
 app.use("/api", checkLoginRoutes);
+const indexRoutes = require('./index')
+app.use("/api", indexRoutes);
 
 
 app.use(express.json());
