@@ -14,8 +14,8 @@ const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const app = express();
-const checkLoginRoutes = require("./api/checkLoginRoutes");
-app.use("/", checkLoginRoutes);
+const checkLoginRoutes = require("./api/checkloggedin");
+app.use("/api", checkLoginRoutes);
 
 
 app.use(express.json());
