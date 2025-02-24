@@ -3,10 +3,10 @@ const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
-const User = require('./collection.js'); // Your User model
-const Counter = require('./counter.js'); // Your Counter model
-const Note = require('./note.js'); // Your Note model
-const Setting = require('./settingschema.js'); // Your Note model
+const User = require('./public/collection.js'); // Your User model
+const Counter = require('./public/counter.js'); // Your Counter model
+const Note = require('./public/note.js'); // Your Note model
+const Setting = require('./public/settingschema.js'); // Your Note model
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -16,7 +16,7 @@ const qrcode = require('qrcode');
 const app = express();
 const checkLoginRoutes = require("./api/checkloggedin");
 app.use("/api", checkLoginRoutes);
-const indexRoutes = require('./index')
+const indexRoutes = require('./api/index')
 app.use("/api", indexRoutes);
 
 
