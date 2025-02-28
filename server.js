@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const session = require('express-session');
 const User = require('./public/collection.js'); // Your User model
 const Counter = require('./public/counter.js'); // Your Counter model
 const Note = require('./public/note.js'); // Your Note model
@@ -29,20 +28,27 @@ app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());  // Middleware to parse cookies
 const MongoStore = require('connect-mongo');
 
-app.use(session({
-  secret: 'angriestbird',
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: 'mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/API', // Replace with your MongoDB URL
-  }),
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-  }
-}));
+const jwt = require('jsonwebtoken');
 
+const SECRET_KEY = "angriestbird";
+
+function generateToken(user) {
+    return jwt.sign(
+        { id: user.id, username: user.username }, // Payload
+        SECRET_KEY, // Secret key
+        { expiresIn: '1h' } // Expiration time
+    );
+}
+function authenticateToken(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: "Access denied" });
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.status(403).json({ error: "Invalid token" });
+        req.user = user;
+        next();
+    });
+}
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, 'uploads/profile_pics'));
@@ -82,9 +88,9 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         return nextId;
     }
 
-    app.post('/2fa-enable', async (req, res) => {
+    app.post('/2fa-enable', authenticateToken, async (req, res) => {
         const { bool } = req.body;
-        const userId = req.session.user.userId;
+        const userId = req.user.userId;
     
         try {
             const existingSetting = await Setting.findOne({ userId: userId });
@@ -94,7 +100,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 const secret = speakeasy.generateSecret();
                 const otpauthUrl = speakeasy.otpauthURL({
                     secret: secret.base32,
-                    label: `API:${req.session.user.name}`,
+                    label: `API:${req.user.name}`,
                     issuer: 'API'
                 });
     
@@ -149,11 +155,8 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             res.status(500).json({ message: 'Error checking 2FA status' });
         }
     });
-app.get('/appearances', async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ message: 'User not logged in' });
-    }
-    const userId = req.session.user.userId;
+app.get('/appearances', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
     const existingSetting = await Setting.findOne({ userId: userId });
 
     if (!existingSetting) {
@@ -165,12 +168,12 @@ app.get('/appearances', async (req, res) => {
         await newSetting.save();
     }
 
-    const settings = await Setting.findOne({ userId: req.session.user.userId });
+    const settings = await Setting.findOne({ userId: req.user.userId });
     res.json({ light: settings.light, midnight: settings.midnight });
 });
-app.post('/updappearance', async (req, res) => {
+app.post('/updappearance', authenticateToken, async (req, res) => {
     const { light, midnight } = req.body;
-    const userId = req.session.user.userId;
+    const userId = req.user.userId;
 
     try {
         const existingSetting = await Setting.findOne({ userId: userId });
@@ -217,13 +220,10 @@ app.post('/send-email', (req, res) => {
     });
 });
 // API endpoint to fetch users
-app.get('/users', async (req, res) => {
+app.get('/users', authenticateToken, async (req, res) => {
     try {
-        if (!req.session.user) {
-            return res.json({ message: 'Please Login First' });
-        }
 
-        const user = await User.findOne({ userId: req.session.user.userId });
+        const user = await User.findOne({ userId: req.user.userId });
         if (user) {
             res.json({ userId: user.userId, name: user.name });
         } else {
@@ -330,7 +330,14 @@ app.post('/login', async (req, res) => {
         }
 
         // If we get here, either 2FA is disabled or the token was valid
-        req.session.user = user; // Set the user in the session
+        const tokens = generateToken({ userId: user.userId, username: user.name });
+        console.log(tokens);
+        res.cookie('token', tokens, {
+            httpOnly: true,  // Prevents access from JavaScript (protects against XSS)
+            secure: true,    // Only sends over HTTPS (set to false for local dev)
+            sameSite: 'Strict', // Prevents CSRF attacks
+            maxAge: 60 * 60 * 1000 // 1 hour expiration
+        });
         res.status(200).json({ 
             message: 'Login successful!', 
             redirectUrl: '/main.html',
@@ -397,19 +404,15 @@ app.post('/reset_resetpass', async (req, res) => {
     }
 });
 
-app.post('/deleteaccount', async (req, res) => {
+app.post('/deleteaccount', authenticateToken, async (req, res) => {
     const { password } = req.body;
 
     try {
-        // Ensure session exists
-        if (!req.session.user) {
-            return res.status(401).json({ message: 'Unauthorized: No session found' });
-        }
 
-        const session_user = req.session.user;
-        console.log("Session User:", session_user);
+        const users = req.user;
+        console.log("User:", users);
 
-        const user = await User.findOne({ name: session_user.name });
+        const user = await User.findOne({ name: users.name });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -429,9 +432,10 @@ app.post('/deleteaccount', async (req, res) => {
         await Setting.deleteMany({ userId: user.userId });
         
 
-        // Destroy session and clear cookies
-        await new Promise((resolve) => req.session.destroy(resolve));
-        res.clearCookie('connect.sid');
+        // Destroy and clear cookies
+        res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'Strict' }); 
+        res.json({ message: "Logged out successfully" });
+        
 
         return res.status(200).json({ message: 'Account deleted successfully' });
 
@@ -442,8 +446,8 @@ app.post('/deleteaccount', async (req, res) => {
 });
 
 
-app.get('/api/notes', async (req, res) => {
-    const user = req.session.user;
+app.get('/api/notes', authenticateToken, async (req, res) => {
+    const user = req.user;
 
     if (!user) {
         return res.status(401).json({ message: 'User not logged in' });
@@ -460,13 +464,9 @@ app.get('/api/notes', async (req, res) => {
 
 
 // Create a new note
-app.post('/api/notes', async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ message: 'User not logged in' });
-    }
-
+app.post('/api/notes', authenticateToken, async (req, res) => {
     const { content } = req.body;
-    const userId = req.session.user.userId;
+    const userId = req.user.userId;
 
     const newNote = new Note({
         content,
@@ -485,11 +485,7 @@ app.post('/api/notes', async (req, res) => {
 
 
 // Update a note
-app.put('/api/notes/:id', async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).send('User not logged in');
-    }
-
+app.put('/api/notes/:id', authenticateToken, async (req, res) => {
     const { content } = req.body;
     if (!content) {
         return res.status(400).send('Note content is required');
@@ -498,7 +494,7 @@ app.put('/api/notes/:id', async (req, res) => {
     try {
         const note = await Note.findOne({
             _id: req.params.id,
-            userId: req.session.user.userId
+            userId: req.user.userId
         });
 
         if (!note) {
@@ -516,15 +512,11 @@ app.put('/api/notes/:id', async (req, res) => {
 });
 
 
-app.delete('/api/notes/:id', async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).send('User not logged in');
-    }
-
+app.delete('/api/notes/:id', authenticateToken, async (req, res) => {
     try {
         const note = await Note.findOneAndDelete({
             _id: req.params.id,
-            userId: req.session.user.userId
+            userId: req.user.userId
         });
 
         if (!note) {
@@ -565,23 +557,15 @@ app.delete('/notes/mass-delete', async (req, res) => {
 
 
 
-app.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ message: 'Failed to log out' });
-        }
-        res.clearCookie('connect.sid');
-        res.status(200).json({ message: 'Logged out successfully' });
-    });
+app.post('/logout', authenticateToken, (req, res) => {
+    res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'Strict' });
+    res.json({ message: "Logged out successfully" });
 });
 
-app.get('/user/profile', async (req, res) => {
-    try {
-        if (!req.session.user) {
-            return res.status(401).json({ message: 'Not logged in' });
-        }
 
-        const userId = req.session.user.userId;
+app.get('/user/profile', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
         const user = await User.findOne({ userId: userId });
 
         if (!user) {
@@ -597,17 +581,13 @@ app.get('/user/profile', async (req, res) => {
 });
 
 
-app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) => {
+app.post('/upload-profile-pic', upload.single('profilePic'), authenticateToken, async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
     }
 
     try {
-        if (!req.session.user) {
-            return res.status(401).json({ message: 'Not logged in' });
-        }
-
-        const userId = req.session.user.userId;
+        const userId = req.user.userId;
         const imagePath = `/uploads/profile_pics/${req.file.filename}`;
 
         const result = await User.findOneAndUpdate(
@@ -627,10 +607,10 @@ app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) =>
     }
 });
 
-app.post('/changeuser', async (req, res) => {
+app.post('/changeuser', authenticateToken, async (req, res) => {
     try {
         const { username } = req.body;
-        const userId = req.session.user.userId;
+        const userId = req.user.userId;
         const user = await User.findOne({ userId: userId });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -640,7 +620,7 @@ app.post('/changeuser', async (req, res) => {
             user.name = username
             await user.save()
             const newuser = await User.findOne({ name: username });
-            req.session.user = newuser; // Store user info in session
+            req.user = newuser; // Store user info in session
             return res.status(201).json({message: "Successfully Changed name"});
         }else{
             return res.status(201).json({message: "Username taken"});
@@ -654,4 +634,4 @@ app.post('/changeuser', async (req, res) => {
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
   });
-module.exports = app; // Export the app
+module.exports = {app, authenticateToken };
