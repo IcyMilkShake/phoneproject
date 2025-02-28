@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const settingSchema = new mongoose.Schema({
     userId: { type: Number, required: true },
@@ -11,5 +11,4 @@ const settingSchema = new mongoose.Schema({
 
 
 const Setting = mongoose.model('Setting', settingSchema);
-
-module.exports = Setting;
+export default Setting

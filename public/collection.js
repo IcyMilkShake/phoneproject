@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
 const userSchema = new mongoose.Schema({
     userId: { type: Number, unique: true, required: true }, // Incrementing ID
@@ -13,4 +13,4 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true }); // This adds createdAt and updatedAt fields automatically
 
 const User = mongoose.model('User', userSchema);
-module.exports = User;
+export default User;
