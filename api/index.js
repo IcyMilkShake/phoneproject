@@ -1,5 +1,4 @@
-// index.js
-const express = require('express');
+import express from 'express'
 const router = express.Router();
 
 // Test route for isolation
@@ -12,4 +11,4 @@ router.all('*', (req, res) => {
   res.status(404).send('Page not found');
 });
 
-module.exports = router;
+export default router
