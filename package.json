@@ -27,5 +27,6 @@
     "qrcode": "^1.5.4",
     "serverless-http": "^3.2.0",
     "speakeasy": "^2.0.0"
-  }
+  },
+  "type": "module"
 }
