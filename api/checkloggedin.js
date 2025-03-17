@@ -1,6 +1,6 @@
 // api/checkloggedin.js
 import express from 'express';
-import { authenticateToken } from '../server.js';  // Import authenticateToken from server.js
+import { authenticateToken } from './api/authenticatetoken.js';  // Import authenticateToken from server.js
 
 const router = express.Router();
 
