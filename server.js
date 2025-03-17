@@ -15,8 +15,10 @@ import cookieParser from 'cookie-parser';
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
 import jwt from 'jsonwebtoken';
+import { authenticateToken } from './api/authenticatetoken.js';
 const app = express();
 app.use(express.json());
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json({ limit: '10mb' }));
