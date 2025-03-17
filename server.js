@@ -15,6 +15,7 @@ import cookieParser from 'cookie-parser';
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
 import jwt from 'jsonwebtoken';
+const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,14 +25,12 @@ app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());  // Middleware to parse cookies
 import MongoStore from 'connect-mongo';
 
-const app = express();
-
+const SECRET_KEY = "angriestbird";
 import checkLoginRoutes from './api/checkloggedin.js';
 import indexRoutes from './api/index.js';
 app.use("/api", checkLoginRoutes);
 app.use("/api", indexRoutes);
 
-const SECRET_KEY = "angriestbird";
 
 function generateToken(user) {
     return jwt.sign(
@@ -39,16 +38,6 @@ function generateToken(user) {
         SECRET_KEY, // Secret key
         { expiresIn: '1h' } // Expiration time
     );
-}
-export const authenticateToken = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: "Access denied" });
-
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.status(403).json({ error: "Invalid token" });
-        req.user = user;
-        next();
-    });
 }
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
