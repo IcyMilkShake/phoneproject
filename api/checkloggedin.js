@@ -1,6 +1,7 @@
 
 // api/checkloggedin.js
-import { authenticateToken } from '../api/authenticatetoken';  // Import authenticateToken from server.js
+import { authenticateToken } from './authenticatetoken.js';  // Add the .js extension
+
 export default async function handler(req, res) {
     if (req.method === 'GET') {
         res.status(200).json({ message: "API is working!" });
