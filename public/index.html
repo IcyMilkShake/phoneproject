@@ -155,7 +155,7 @@
         async function checkloggedin() {
             try {
                 const response = await fetch('/api/checkloggedin', {
-                    credentials: 'include'
+                    credentials: 'same-origin'
                 });
 
                 const data = await response.json();
