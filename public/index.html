@@ -155,6 +155,7 @@
         async function checkloggedin() {
             try {
                 const response = await fetch('/api/checkloggedin', {
+                    method: 'GET',
                     credentials: 'same-origin'
                 });
 
@@ -164,6 +165,10 @@
                     alert(data.message)
                     window.location.href = 'main.html';
                 } else {
+                    console.log('Response Status:', response.status); // Log status code
+                    console.log('Response Headers:', response.headers); // Log headers
+                    console.log('Response Body:', data); // Log the response body
+                    console.log(response)
                     console.error('Error checking login status');
                 }
             } catch (error) {

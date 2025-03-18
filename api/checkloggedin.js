@@ -1,3 +1,4 @@
+
 // api/checkloggedin.js
 import { authenticateToken } from '../api/authenticatetoken.js';  // Import authenticateToken from server.js
 
@@ -15,6 +16,7 @@ export default async function handler(req, res) {
                 return res.status(401).json({ message: "Not logged in" });
             }
         } catch (error) {
+            console.error("Error in checkloggedin API:", error.message); // Log the error for debugging
             return res.status(500).json({ message: "Server error", error: error.message });
         }
     } else {
