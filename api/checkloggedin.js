@@ -1,7 +1,14 @@
 
 // api/checkloggedin.js
-import { authenticateToken } from '../api/authenticatetoken.js';  // Import authenticateToken from server.js
-
+import { authenticateToken } from '../api/authenticatetoken';  // Import authenticateToken from server.js
+export default async function handler(req, res) {
+    if (req.method === 'GET') {
+        res.status(200).json({ message: "API is working!" });
+    } else {
+        res.status(405).json({ message: "Method Not Allowed" });
+    }
+}
+/*
 export default async function handler(req, res) {
     if (req.method === 'GET') {
         try {
@@ -23,3 +30,4 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
 }
+    */
