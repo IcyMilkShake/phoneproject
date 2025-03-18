@@ -4,14 +4,6 @@ import { authenticateToken } from './authenticatetoken.js';  // Add the .js exte
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {
-        res.status(200).json({ message: "API is working!" });
-    } else {
-        res.status(405).json({ message: "Method Not Allowed" });
-    }
-}
-/*
-export default async function handler(req, res) {
-    if (req.method === 'GET') {
         try {
             // Logic to check if the user is logged in
             const user = await authenticateToken(req); // Adjust this function if necessary
@@ -31,4 +23,3 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
 }
-    */
