@@ -1,19 +1,23 @@
 // api/checkloggedin.js
-import express from 'express';
 import { authenticateToken } from '../api/authenticatetoken.js';  // Import authenticateToken from server.js
 
-const router = express.Router();
-
-router.get("/checkloggedin", authenticateToken, async (req, res) => {
-    console.log("response hit");
-    if (req.user) {
-        return res.status(200).json({ 
-            message: "You are already logged in. Redirecting to the main page...",
-            redirectUrl: "/main.html"  // The page you want to redirect to
-        });
+export default async function handler(req, res) {
+    if (req.method === 'GET') {
+        try {
+            // Logic to check if the user is logged in
+            const user = await authenticateToken(req); // Adjust this function if necessary
+            if (user) {
+                return res.status(200).json({ 
+                    message: "You are already logged in. Redirecting to the main page...",
+                    redirectUrl: "/main.html"
+                });
+            } else {
+                return res.status(401).json({ message: "Not logged in" });
+            }
+        } catch (error) {
+            return res.status(500).json({ message: "Server error", error: error.message });
+        }
     } else {
-        return res.status(401).json({ message: "Not logged in" });
+        return res.status(405).json({ message: 'Method Not Allowed' });
     }
-});
-
-export default router;  // Export as default
+}
