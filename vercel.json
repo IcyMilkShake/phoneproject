@@ -3,7 +3,7 @@
   "builds": [
     { "src": "public/**/*", "use": "@vercel/static", "public": true },
     { "src": "uploads/**/*", "use": "@vercel/static" },
-    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
     { "src": "/uploads/(.*)", "dest": "/uploads/$1" },
