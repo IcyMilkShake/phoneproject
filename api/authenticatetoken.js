@@ -13,17 +13,18 @@ export const authenticateToken = async (req) => {
     }
 
     try {
-        // Use a promise to handle JWT verification
+        // Use the promise-based approach for jwt.verify
         const user = await new Promise((resolve, reject) => {
             jwt.verify(token, SECRET_KEY, (err, decodedUser) => {
                 if (err) {
-                    reject("Invalid token");
+                    reject(new Error("Invalid token or token expired"));
                 }
-                resolve(decodedUser);
+                resolve(decodedUser);  // Return decoded user data if the token is valid
             });
         });
-        return user;
+        return user;  // Return the decoded user object
     } catch (error) {
-        throw new Error(error);
+        // If the token verification fails, throw an error
+        throw new Error(`Token verification failed: ${error.message}`);
     }
 };

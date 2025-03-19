@@ -325,11 +325,13 @@ app.post('/login', async (req, res) => {
         const tokens = generateToken({ userId: user.userId, username: user.name });
         console.log(tokens);
         res.cookie('token', tokens, {
-            httpOnly: true,  // Prevents access from JavaScript (protects against XSS)
-            secure: true,    // Only sends over HTTPS (set to false for local dev)
-            sameSite: 'Strict', // Prevents CSRF attacks
-            maxAge: 60 * 60 * 1000 // 1 hour expiration
+            httpOnly: true,  
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'Strict', 
+            maxAge: 60 * 60 * 1000 
         });
+        console.log("Setting cookie:", tokens);
+        console.log("Response headers:", res.getHeaders());                
         res.status(200).json({ 
             message: 'Login successful!', 
             redirectUrl: '/main.html',

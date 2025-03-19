@@ -16,7 +16,12 @@ export default async function handler(req, res) {
                 return res.status(401).json({ message: "Not logged in" });
             }
         } catch (error) {
-            console.error("Error in checkloggedin API:", error.message); // Log the error for debugging
+            console.error("Error in checkloggedin API:", error.message); // Log error for debugging
+            // Check if the error is related to missing token and send a specific message
+            if (error.message.includes("No token provided")) {
+                return res.status(200).json({ message: "Not logged in" });
+            }
+            // Return server error for other types of errors
             return res.status(500).json({ message: "Server error", error: error.message });
         }
     } else {

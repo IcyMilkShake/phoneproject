@@ -162,8 +162,12 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert(data.message)
-                    window.location.href = 'main.html';
+                    if (data.message == "Not logged in") {
+                        return
+                    }else{
+                        alert(data.message)
+                        window.location.href = 'main.html';
+                    }
                 } else {
                     console.log('Response Status:', response.status); // Log status code
                     console.log('Response Headers:', response.headers); // Log headers
