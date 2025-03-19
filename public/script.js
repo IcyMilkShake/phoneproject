@@ -26,7 +26,7 @@ submit.addEventListener('click', async () => {
     };
 
     try {
-        const response = await fetch('http://bigbear760.synology.me:8080/signup', {
+        const response = await fetch('/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

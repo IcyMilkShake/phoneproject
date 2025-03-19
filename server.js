@@ -4,10 +4,10 @@ import express from 'express';
 import path from 'path';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import User from './public/collection.js'; // Your User model
-import Counter from './public/counter.js'; // Your Counter model
+import User from './models/collection.js'; // Your User model
+import Counter from './models/counter.js'; // Your Counter model
 import Note from './public/note.js'; // Your Note model
-import Setting from './public/settingschema.js'; // Your Note model
+import Setting from './models/settingschema.js'; // Your Note model
 import nodemailer from 'nodemailer';
 import bodyParser from 'body-parser';
 import multer from 'multer';
@@ -62,23 +62,32 @@ const transporter = nodemailer.createTransport({
     }
 });
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/API')
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error(err));
-
-    async function getNextSequenceValue(sequenceName) {
-        const maxUserId = await User.find().sort({ userId: -1 }).limit(1).select('userId');
-        let nextId = 1;
-        if (maxUserId.length > 0) {
-            nextId = maxUserId[0].userId + 1;
-        }
-        await Counter.findOneAndUpdate(
-            { modelName: sequenceName },
-            { seq: nextId },
-            { upsert: true }
-        );
-        return nextId;
+const connectDB = async () => {
+    try {
+        await mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/API', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('MongoDB connected');
+    } catch (err) {
+        console.error('MongoDB connection failed', err);
+        process.exit(1); // Exit if connection fails
     }
+};
+async function getNextSequenceValue(sequenceName) {
+    const maxUserId = await User.find().sort({ userId: -1 }).limit(1).select('userId');
+    let nextId = 1;
+    if (maxUserId.length > 0) {
+        nextId = maxUserId[0].userId + 1;
+    }
+    await Counter.findOneAndUpdate(
+        { modelName: sequenceName },
+        { seq: nextId },
+        { upsert: true }
+    );
+    return nextId;
+}
+export { connectDB, getNextSequenceValue };
 
     app.post('/2fa-enable', authenticateToken, async (req, res) => {
         const { bool } = req.body;
@@ -231,39 +240,7 @@ app.get('/testing',async (req, res) => {
     return res.status(200).json(await User.find());
 });
 // POST endpoint to create a new user
-app.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        const existingUser = await User.findOne({ name });
-        if (existingUser) {
-            return res.status(200).json({ message: 'Username already exists!' });
-        }
 
-        const existingEmail = await User.findOne({ email });
-        if (existingEmail) {
-            return res.status(200).json({ message: 'Email already exists!' });
-        }
-
-        const userId = await getNextSequenceValue('userId');
-        
-        // Set the default profile picture path
-        const defaultProfilePicture = '/uploads/profile_pics/default-profile.png'; // Default image path
-        
-        const newUser = new User({
-            userId,
-            name,
-            email,
-            password,
-            profilePicture: { path: defaultProfilePicture, contentType: 'image/png' }, // Default profile picture
-        });
-
-        await newUser.save(); // Save to the database
-        res.status(201).json({ message: 'User created successfully!' });
-    } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({ message: 'Internal server error', error: error.message });
-    }
-});
 
 
 
