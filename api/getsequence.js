@@ -1,3 +1,5 @@
+import User from '../models/collection.js'; // Import the User model
+import Counter from '../models/counter.js'; // Import the User model
 // Export the getNextSequenceValue function
 export async function getNextSequenceValue(sequenceName) {
     const maxUserId = await User.find().sort({ userId: -1 }).limit(1).select('userId');

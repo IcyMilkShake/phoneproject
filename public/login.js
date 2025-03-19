@@ -6,7 +6,6 @@ const loginSection = document.getElementById("loginSection");
 const verifyButton = document.getElementById("verifyCode");
 
 loginButton.addEventListener('click', async () => {
-    console.log("aaa");
     try {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isEmail = emailPattern.test(username.value);
@@ -104,22 +103,3 @@ document.getElementById("signupRedirect").addEventListener('click', () => {
 document.getElementById("forgotPassword").addEventListener('click', () => {
     window.location.href = 'forgotpass.html';
 });
-
-// Check if already logged in
-async function checkLoggedIn() {
-    try {
-        const response = await fetch('/checkloggedin', {
-            credentials: 'same-origin'
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.redirectUrl) {
-            window.location.href = data.redirectUrl;
-        }
-    } catch (error) {
-        console.error('Error checking login status:', error);
-    }
-}
-
-checkLoggedIn();

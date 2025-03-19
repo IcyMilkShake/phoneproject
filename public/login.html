@@ -133,23 +133,34 @@
         });
 
         // Check if already logged in
-        async function checkLoggedIn() {
+        async function checkloggedin() {
             try {
-                const response = await fetch('/checkloggedin', {
+                const response = await fetch('/api/checkloggedin', {
+                    method: 'GET',
                     credentials: 'same-origin'
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.location.href = 'main.html';
+                    if (data.message == "Not logged in") {
+                        return
+                    }else{
+                        alert(data.message)
+                        window.location.href = 'main.html';
+                    }
+                } else {
+                    console.log('Response Status:', response.status); // Log status code
+                    console.log('Response Headers:', response.headers); // Log headers
+                    console.log('Response Body:', data); // Log the response body
+                    console.log(response)
+                    console.error('Error checking login status');
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
             }
         }
-        
-        checkLoggedIn();
+        checkloggedin();
     </script>
 </body>
 </html>
