@@ -25,14 +25,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());  // Middleware to parse cookies
-import MongoStore from 'connect-mongo';
 
 const SECRET_KEY = "angriestbird";
-import checkLoginRoutes from './api/checkloggedin.js';
-import indexRoutes from './api/index.js';
-app.use("/api", checkLoginRoutes);
-app.use("/api", indexRoutes);
-
 
 function generateToken(user) {
     return jwt.sign(
@@ -61,19 +55,6 @@ const transporter = nodemailer.createTransport({
         pass: 'bwun jaxk lgnn leal'
     }
 });
-// Connect to MongoDB
-const connectDB = async () => {
-    try {
-        await mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/API', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log('MongoDB connected');
-    } catch (err) {
-        console.error('MongoDB connection failed', err);
-        process.exit(1); // Exit if connection fails
-    }
-};
 async function getNextSequenceValue(sequenceName) {
     const maxUserId = await User.find().sort({ userId: -1 }).limit(1).select('userId');
     let nextId = 1;
@@ -87,7 +68,7 @@ async function getNextSequenceValue(sequenceName) {
     );
     return nextId;
 }
-export { connectDB, getNextSequenceValue };
+export { getNextSequenceValue };
 
     app.post('/2fa-enable', authenticateToken, async (req, res) => {
         const { bool } = req.body;
