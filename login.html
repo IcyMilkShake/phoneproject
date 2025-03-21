@@ -32,6 +32,12 @@
             caret-color: transparent;
         }
 
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(20px); }
+            100% { transform: translateY(0px); }
+        }
+
         .background {
             background-color: var(--card-dark);
             width: 100%;
@@ -57,6 +63,7 @@
             animation: rotate 4s linear infinite;
             z-index: -1;
         }
+        
         .textboxscale {
             width: 100%;
             padding: 15px 15px 15px 45px;
