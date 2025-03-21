@@ -46,7 +46,17 @@
             align-items: center;
             animation: float 6s ease-in-out infinite;
         }
-
+        .background::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, transparent);
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+        }
         .textboxscale {
             width: 100%;
             padding: 15px 15px 15px 45px;
