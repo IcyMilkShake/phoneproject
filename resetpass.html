@@ -127,7 +127,7 @@
                     password: newpass.value
                 };
                 try {
-                    const response = await fetch('http://bigbear760.synology.me:8080/reset_resetpass', {
+                    const response = await fetch('/reset_resetpass', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

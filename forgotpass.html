@@ -147,7 +147,7 @@
                     email: email.value,
                 };
                 try {
-                    const response = await fetch('http://bigbear760.synology.me:8080/check_resetpass', {
+                    const response = await fetch('/check_resetpass', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

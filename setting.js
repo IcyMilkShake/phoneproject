@@ -133,7 +133,7 @@ twofa.addEventListener('click', async () => {
             bool: val
         };
         
-        const response = await fetch('http://bigbear760.synology.me:8080/2fa-enable', {
+        const response = await fetch('/2fa-enable', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ lightMode.addEventListener('click', async () => {
                 light: true,
                 midnight: false
             };
-            const response = await fetch('http://bigbear760.synology.me:8080/updappearance', {
+            const response = await fetch('/updappearance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ lightMode.addEventListener('click', async () => {
                 light: false,
                 midnight: false
             };
-            const response = await fetch('http://bigbear760.synology.me:8080/updappearance', {
+            const response = await fetch('/updappearance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ midnightMode.addEventListener('click', async () => {
                 light: false,
                 midnight: true  
             };
-            const response = await fetch('http://bigbear760.synology.me:8080/updappearance', {
+            const response = await fetch('/updappearance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -241,7 +241,7 @@ midnightMode.addEventListener('click', async () => {
                 light: false,
                 midnight: false
             };
-            const response = await fetch('http://bigbear760.synology.me:8080/updappearance', {
+            const response = await fetch('/updappearance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
