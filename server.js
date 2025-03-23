@@ -272,10 +272,6 @@ app.get('/checkloggedin', async (req,res) => {
             message: 'You are already logged in. Redirecting to the main page...',
             redirectUrl: '/main.html' // The page you want to redirect to
         });
-    }else{
-        return res.status(200).json({ 
-            message: 'Not logged in',
-        });
     }
 })
 
