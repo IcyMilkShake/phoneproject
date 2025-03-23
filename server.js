@@ -29,14 +29,14 @@ app.use(cookieParser());  // Middleware to parse cookies
 app.use(session({
     secret: 'angriestbird',  // Change this to a secure random string
     resave: false,
-    saveUninitialized: true,    
+    saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        secure: true,  // Ensure cookies are only sent over HTTPS
-        sameSite: 'strict',  // Prevent CSRF attacks
-        maxAge: 24 * 60 * 60 * 1000  // 1-day expiration
+        secure: process.env.NODE_ENV === 'production' ? true : false,  // Set to true in production if using HTTPS
+        maxAge: 24 * 60 * 60 * 1000  // Cookie expiration: 1 day
     }
 }));
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
