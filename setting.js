@@ -135,8 +135,7 @@ twofa.addEventListener('click', async () => {
     twofa.classList.toggle('active');
     try{
         if (twofa.classList.contains('active')) {
-        midnightElement.classList.remove('active');
-        val = true
+            val = true
         }else{
             val = false
         }
