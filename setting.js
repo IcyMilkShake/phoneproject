@@ -83,6 +83,10 @@ async function loadAppearances() {
             document.documentElement.style.setProperty('--hover-color', '#1c181c');
             document.documentElement.style.setProperty('--row', '#584a63');
         }
+
+        if (result.twofac === true) {
+            twofa.classList.add('active');
+        }
     } catch (error) {
         console.error('Error loading appearances:', error);
     } finally {

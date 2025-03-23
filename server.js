@@ -158,7 +158,7 @@ app.get('/appearances', async (req, res) => {
     }
 
     const settings = await Setting.findOne({ userId: req.session.user.userId });
-    res.json({ light: settings.light, midnight: settings.midnight });
+    res.json({ light: settings.light, midnight: settings.midnight, twofac: settings.twofac });
 });
 app.post('/updappearance', async (req, res) => {
     const { light, midnight } = req.body;
