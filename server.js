@@ -29,13 +29,15 @@ app.use(cookieParser());  // Middleware to parse cookies
 app.use(session({
     secret: 'angriestbird',  // Change this to a secure random string
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: true,    
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,  // Set to true in production if using HTTPS
-        maxAge: 24 * 60 * 60 * 1000  // Cookie expiration: 1 day
+        secure: true,  // Ensure cookies are only sent over HTTPS
+        sameSite: 'strict',  // Prevent CSRF attacks
+        maxAge: 24 * 60 * 60 * 1000  // 1-day expiration
     }
 }));
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, 'uploads/profile_pics'));
@@ -270,12 +272,15 @@ app.get('/checkloggedin', async (req,res) => {
             message: 'You are already logged in. Redirecting to the main page...',
             redirectUrl: '/main.html' // The page you want to redirect to
         });
+    }else{
+        return res.status(200).json({ 
+            message: 'Not logged in',
+        });
     }
 })
 
 app.post('/login', async (req, res) => {
     const { name, password, email, token } = req.body;
-    console.log(token)
     try {
         let user;
 
@@ -292,7 +297,6 @@ app.post('/login', async (req, res) => {
 
         // Get user's 2FA settings
         const userSettings = await Setting.findOne({ userId: user.userId });
-        console.log("Stored Secret:", userSettings?.twofaSecret);
         // If 2FA is enabled but no token provided, request 2FA
         if (userSettings?.twofac && !token) {
             return res.status(401).json({ 
@@ -304,17 +308,7 @@ app.post('/login', async (req, res) => {
         }
 
         // If 2FA is enabled and token is provided, verify it
-        if (userSettings?.twofac && token) {
-            console.log("yo")          
-            
-            const expectedCode = speakeasy.totp({
-                secret: userSettings.twofaSecret,
-                encoding: 'base32'
-            });
-            
-            console.log("Expected Code:", expectedCode);
-            console.log("User Entered Code:", token);
-            
+        if (userSettings?.twofac && token) {          
             const verified = speakeasy.totp.verify({
                 secret: userSettings.twofaSecret,
                 encoding: 'base32',
