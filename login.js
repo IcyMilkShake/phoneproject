@@ -37,7 +37,6 @@ loginButton.addEventListener('click', async () => {
         if (response.status === 401 && data.requires2FA) {
             loginSection.style.display = 'none'; // Hide the login section
             document.getElementById('qrSection').style.display = 'block'; // Show 2FA section
-            document.getElementById('qrCode').src = data.qrCodeUrl; // Display QR code for 2FA
         } else if (response.ok) {
             window.location.href = data.redirectUrl;
         } else {

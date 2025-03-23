@@ -35,7 +35,7 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production' ? true : false,  // Set to true in production if using HTTPS
         maxAge: 24 * 60 * 60 * 1000  // Cookie expiration: 1 day
     }
-}));
+}));    
 
 
 const storage = multer.diskStorage({
@@ -107,7 +107,6 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 } else {
                     // Update existing setting
                     existingSetting.twofac = true;
-                    console.log("Generated Secret (base32):", secret.base32);
                     existingSetting.twofaSecret = secret.base32;
                     
                     existingSetting.twofaQRCode = qrcodeUrl;
@@ -299,7 +298,6 @@ app.post('/login', async (req, res) => {
                 message: '2FA token required', 
                 requires2FA: true,
                 userId: user.userId,
-                qrCodeUrl: userSettings.twofaQRCode // Send the QR code URL to the user
             });
         }
 
@@ -318,7 +316,6 @@ app.post('/login', async (req, res) => {
                     message: 'Invalid 2FA token',
                     requires2FA: true,
                     userId: user.userId,
-                    qrCodeUrl: userSettings.twofaQRCode // Send the QR code URL to the user
                 });
             }
         }

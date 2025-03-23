@@ -21,10 +21,16 @@ const cancelDelete = document.getElementById("cancelDelete");
 const confirmDelete = document.getElementById("confirmDelete");
 const getuser = document.getElementById("getuser");
 const edituser = document.getElementById("edituser");
+const qrCode = document.getElementById("qrCode");
+const dones = document.getElementById("dones");
 // Toggle the visibility of the tooltip when the info icon is clicked
 infoIcon.addEventListener('click', () => {
     const isVisible = tooltip.style.display === 'block';
     tooltip.style.display = isVisible ? 'none' : 'block';
+});
+
+dones.addEventListener('click', () => {
+    document.getElementById('qrSection').style.display = 'none'; // Show 2FA section
 });
 function showContent() {
     loadingScreen.style.display = 'none';
@@ -140,7 +146,9 @@ twofa.addEventListener('click', async () => {
             },  
             body: JSON.stringify(set),
         })
-        console.log(JSON.stringify(set))
+        const data = await response.json();
+        document.getElementById('qrSection').style.display = 'block'; // Show 2FA section
+        qrCode.src = data.qrcodeUrl
     } catch (error) {
         console.error('Error:', error);
         alert('There was an error updating.');
