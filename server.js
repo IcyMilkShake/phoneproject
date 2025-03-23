@@ -89,12 +89,6 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             if (bool) {
                 // Generate the 2FA secret
                 const secret = speakeasy.generateSecret({ name: `API:${req.session.user.name}` });
-                const expectedCode = speakeasy.totp({
-                    secret: secret,
-                    encoding: 'base32'
-                });
-                
-                console.log('Expected Code:', expectedCode);
                 // Generate the QR code URL
                 const qrcodeUrl = await qrcode.toDataURL(secret.otpauth_url);
     
@@ -111,7 +105,9 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 } else {
                     // Update existing setting
                     existingSetting.twofac = true;
+                    console.log("Generated Secret (base32):", secret.base32);
                     existingSetting.twofaSecret = secret.base32;
+                    
                     existingSetting.twofaQRCode = qrcodeUrl;
                     await existingSetting.save();
                 }
@@ -296,7 +292,7 @@ app.post('/login', async (req, res) => {
 
         // Get user's 2FA settings
         const userSettings = await Setting.findOne({ userId: user.userId });
-        console.log("hi")
+        console.log("Stored Secret:", userSettings?.twofaSecret);
         // If 2FA is enabled but no token provided, request 2FA
         if (userSettings?.twofac && !token) {
             return res.status(401).json({ 
@@ -310,6 +306,14 @@ app.post('/login', async (req, res) => {
         // If 2FA is enabled and token is provided, verify it
         if (userSettings?.twofac && token) {
             console.log("yo")          
+            const expectedCode = speakeasy.totp({
+                secret: userSettings.twofaSecret,
+                encoding: 'base32'
+            });
+            
+            console.log("Expected Code:", expectedCode);
+            console.log("User Entered Code:", token);
+            
             const verified = speakeasy.totp.verify({
                 secret: userSettings.twofaSecret,
                 encoding: 'base32',
