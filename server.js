@@ -75,43 +75,47 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         return nextId;
     }
 
+    const speakeasy = require('speakeasy');
+    const qrcode = require('qrcode');
+    
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
-        const userId = req.session.user.userId;
+        const userId = req.session.user?.userId;
+    
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
     
         try {
-            const existingSetting = await Setting.findOne({ userId: userId });
-            
+            const existingSetting = await Setting.findOne({ userId });
+    
             if (bool) {
                 // Generate the 2FA secret
-                const secret = speakeasy.generateSecret();
-                const otpauthUrl = speakeasy.otpauthURL({
-                    secret: secret.base32,
-                    label: `API:${req.session.user.name}`,
-                    issuer: 'API'
+                const secret = speakeasy.generateSecret({ name: `API:${req.session.user.name}` });
+                const expectedCode = speakeasy.totp({
+                    secret: secret,
+                    encoding: 'base32'
                 });
-    
-                const code = speakeasy.totp({ secret: 'MISD4ZJUGUUUEUBJPVIWGR3ENVQX2QJSHFUEU3JIOQWEC4R4NVEQ', encoding: 'base32' });
-                console.log('Generated Code:', code);
-                // Generate the QR code URL
-                const qrcodeUrl = await qrcode.toDataURL(otpauthUrl);
                 
+                console.log('Expected Code:', expectedCode);
+                // Generate the QR code URL
+                const qrcodeUrl = await qrcode.toDataURL(secret.otpauth_url);
+    
                 if (!existingSetting) {
-                    // If no existing setting, create a new one
-                    const newSetting = new Setting({
+                    // Create a new setting if none exists
+                    await Setting.create({
                         userId,
                         light: false,
                         midnight: false,
                         twofac: true,
                         twofaSecret: secret.base32,
-                        twofaQRCode: qrcodeUrl // Save the QR code URL in the database
+                        twofaQRCode: qrcodeUrl
                     });
-                    await newSetting.save();
                 } else {
-                    // If an existing setting exists, update it
+                    // Update existing setting
                     existingSetting.twofac = true;
                     existingSetting.twofaSecret = secret.base32;
-                    existingSetting.twofaQRCode = qrcodeUrl; // Save the QR code URL in the database
+                    existingSetting.twofaQRCode = qrcodeUrl;
                     await existingSetting.save();
                 }
     
@@ -132,6 +136,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             res.status(500).json({ message: 'Error updating 2FA', error: error.message });
         }
     });
+    
     
     app.get('/check-2fa-status/:userId', async (req, res) => {
         try {
