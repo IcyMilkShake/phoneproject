@@ -135,6 +135,7 @@ twofa.addEventListener('click', async () => {
     twofa.classList.toggle('active');
     try{
         if (twofa.classList.contains('active')) {
+        midnightElement.classList.remove('active');
         val = true
         }else{
             val = false
@@ -142,7 +143,7 @@ twofa.addEventListener('click', async () => {
         const set = {
             bool: val
         };
-        
+
         const response = await fetch('/2fa-enable', {
             method: 'POST',
             headers: {
@@ -151,8 +152,10 @@ twofa.addEventListener('click', async () => {
             body: JSON.stringify(set),
         })
         const data = await response.json();
-        document.getElementById('qrSection').style.display = 'block'; // Show 2FA section
-        qrCode.src = data.qrcodeUrl
+        if (val) {
+            qrCode.src = data.qrcodeUrl
+            document.getElementById('qrSection').style.display = 'block'; // Show 2FA section
+        }
     } catch (error) {
         console.error('Error:', error);
         alert('There was an error updating.');
