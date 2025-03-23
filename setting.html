@@ -348,7 +348,50 @@
         .confirm-btn:hover {
             background-color: rgb(200, 50, 50);
         }
+        #qrSection {
+        display: none;
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        background-color: var(--card-dark);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--text-primary);
+        text-align: center;
+        z-index: 10;
+    }
+    #qrSection p {
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: var(--text-primary);
+    }
+    #qrCode {
+        margin: 0 auto 20px;
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 2px solid var(--accent-color);
+        border-radius: 10px;
+    }
 
+    #dones {
+        padding: 12px 20px;
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #dones:hover {
+        background-color: var(--hover-color);
+    }
     </style>
 </head>
 <body>
