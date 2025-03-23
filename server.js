@@ -306,6 +306,7 @@ app.post('/login', async (req, res) => {
         // If 2FA is enabled and token is provided, verify it
         if (userSettings?.twofac && token) {
             console.log("yo")          
+            
             const expectedCode = speakeasy.totp({
                 secret: userSettings.twofaSecret,
                 encoding: 'base32'
