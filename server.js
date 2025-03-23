@@ -307,10 +307,7 @@ app.post('/login', async (req, res) => {
 
         // If 2FA is enabled and token is provided, verify it
         if (userSettings?.twofac && token) {
-            console.log("yo")
-            
-            const code = speakeasy.totp({ secret: 'MISD4ZJUGUUUEUBJPVIWGR3ENVQX2QJSHFUEU3JIOQWEC4R4NVEQ', encoding: 'base32' });
-            console.log('Generated Code:', code);
+            console.log("yo")          
             const verified = speakeasy.totp.verify({
                 secret: userSettings.twofaSecret,
                 encoding: 'base32',
