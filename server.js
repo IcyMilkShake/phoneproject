@@ -74,9 +74,6 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         );
         return nextId;
     }
-
-    const speakeasy = require('speakeasy');
-    const qrcode = require('qrcode');
     
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
