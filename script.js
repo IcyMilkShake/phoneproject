@@ -1,80 +1,77 @@
+// login.js
 const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
+
 // Callback function to handle Google Sign-In response
 function handleCredentialResponse(response) {
     console.log("Encoded JWT ID token: " + response.credential);
     
-    // Decode ID token (for debugging)
-    const payload = JSON.parse(atob(response.credential.split(".")[1]));
+    try {
+        const payload = JSON.parse(atob(response.credential.split(".")[1]));
+        console.log("User ID:", payload.sub);
+        console.log("User Name:", payload.name);
+        console.log("User Email:", payload.email);
+        console.log("User Image URL:", payload.picture);
     
-    console.log("User ID: " + payload.sub);
-    console.log("User Name: " + payload.name);
-    console.log("User Email: " + payload.email);
-    console.log("User Image URL: " + payload.picture);
-
-    // Send the token to your backend for verification
-    sendTokenToServer(response.credential);
+        // Send the token to your backend for verification
+        sendTokenToServer(response.credential);
+    } catch (error) {
+        console.error("Error decoding JWT token:", error);
+    }
 }
 
 // Function to send the token to the backend
-function sendTokenToServer(id_token) {
-    fetch('/tokenGoogleAuth', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: id_token })
-    })
-    .then(response => response.json())
-    .then(data => console.log('Server Response:', data))
-    .catch(error => console.error('Error:', error));
+async function sendTokenToServer(id_token) {
+    try {
+        const response = await fetch('/tokenGoogleAuth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: id_token })
+        });
+        const data = await response.json();
+        console.log('Server Response:', data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
-
 submit.addEventListener('click', async () => {
-    const usernamePattern = /[^a-zA-Z0-9._]/; // Matches any character that is not a letter, number, dot, or underscore
+    const usernamePattern = /[^a-zA-Z0-9._]/;
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (username.value.length <= 3 || username.value.length >= 20) {
-        alert("Username must be > 3 and < 20");
-        return
-    } else if (emailPattern.test(email.value) === false) {
-        alert("Please enter the correct email format")
-        return
-    } else if (usernamePattern.test(username.value) == true){
-        alert("No special characters are allowed for username, except . and _")
-    } else if (pass.value.length <= 5) {
-        alert("Password must be at least 6 letters long");
-        return
+    
+    if (username.value.length < 3 || username.value.length > 20) {
+        alert("Username must be between 3 and 20 characters");
+        return;
     }
-
-    const userData = {
-        name: username.value,
-        email: email.value,
-        password: pass.value,
-    };
-
+    if (!emailPattern.test(email.value)) {
+        alert("Invalid email format");
+        return;
+    }
+    if (usernamePattern.test(username.value)) {
+        alert("Username can only contain letters, numbers, dots, and underscores");
+        return;
+    }
+    if (pass.value.length < 6) {
+        alert("Password must be at least 6 characters long");
+        return;
+    }
+    
+    const userData = { name: username.value, email: email.value, password: pass.value };
+    
     try {
         const response = await fetch('/signup', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const result = await response.json();
-        if (result.message == 'User created successfully!') {
-            window.location.href = "login.html"
+        
+        if (response.ok && result.message === 'User created successfully!') {
+            window.location.href = "login.html";
         }
-        username.value = ''; // Clear username input
-        email.value = ''; // Clear username input
-        pass.value = ''; // Clear password input
+        username.value = ''; email.value = ''; pass.value = '';
     } catch (error) {
         console.error('Error adding user:', error);
     }
