@@ -2,6 +2,40 @@ const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
+const google = document.getElementById("google");
+
+google.addEventListener('click', async () => {
+    var profile = googleUser.getBasicProfile();
+    var userId = profile.getId();
+    var userName = profile.getName();
+    var userEmail = profile.getEmail();
+    var userImage = profile.getImageUrl();
+
+    console.log("User ID: " + userId);
+    console.log("User Name: " + userName);
+    console.log("User Email: " + userEmail);
+    console.log("User Image URL: " + userImage);
+
+    // Get the ID token (you will need this for server-side authentication)
+    var id_token = googleUser.getAuthResponse().id_token;
+
+    // Send the ID token to your server for verification
+    sendTokenToServer(id_token);
+})
+
+function sendTokenToServer(id_token) {
+    // Example: Send the token to your server using AJAX or Fetch
+    fetch('/tokenGoogleAuth', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: id_token })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Server Response:', data))
+    .catch(error => console.error('Error:', error));
+}
 
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/; // Matches any character that is not a letter, number, dot, or underscore

@@ -13,6 +13,9 @@ const multer = require('multer');
 const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client("764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"); // Use your Google Client ID here
+
 const app = express();
 const PORT = 8080;
 
@@ -273,6 +276,29 @@ app.get('/checkloggedin', async (req,res) => {
         });
     }
 })
+
+
+app.post('/tokenGoogleAuth', async (req, res) => {
+    const { token } = req.body;  // Extract token from the request body
+    
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token, // Pass the token from the client here
+            audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+        });
+
+        const payload = ticket.getPayload();
+        const userId = payload.sub; // User ID from Google
+
+        console.log('User ID:', userId);
+        // Proceed with authentication, e.g. create a session, or check the database for existing users
+
+        res.json({ success: true, userId: userId });  // Send a response to the client
+    } catch (error) {
+        console.error('Token verification failed:', error);
+        res.status(401).json({ success: false, message: 'Token verification failed' });
+    }
+});
 
 app.post('/login', async (req, res) => {
     const { name, password, email, token } = req.body;
