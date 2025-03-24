@@ -2,29 +2,24 @@ const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
-const google = document.getElementById("google");
+// Callback function to handle Google Sign-In response
+function handleCredentialResponse(response) {
+    console.log("Encoded JWT ID token: " + response.credential);
+    
+    // Decode ID token (for debugging)
+    const payload = JSON.parse(atob(response.credential.split(".")[1]));
+    
+    console.log("User ID: " + payload.sub);
+    console.log("User Name: " + payload.name);
+    console.log("User Email: " + payload.email);
+    console.log("User Image URL: " + payload.picture);
 
-google.addEventListener('click', async () => {
-    var profile = googleUser.getBasicProfile();
-    var userId = profile.getId();
-    var userName = profile.getName();
-    var userEmail = profile.getEmail();
-    var userImage = profile.getImageUrl();
+    // Send the token to your backend for verification
+    sendTokenToServer(response.credential);
+}
 
-    console.log("User ID: " + userId);
-    console.log("User Name: " + userName);
-    console.log("User Email: " + userEmail);
-    console.log("User Image URL: " + userImage);
-
-    // Get the ID token (you will need this for server-side authentication)
-    var id_token = googleUser.getAuthResponse().id_token;
-
-    // Send the ID token to your server for verification
-    sendTokenToServer(id_token);
-})
-
+// Function to send the token to the backend
 function sendTokenToServer(id_token) {
-    // Example: Send the token to your server using AJAX or Fetch
     fetch('/tokenGoogleAuth', {
         method: 'POST',
         headers: {
@@ -36,6 +31,7 @@ function sendTokenToServer(id_token) {
     .then(data => console.log('Server Response:', data))
     .catch(error => console.error('Error:', error));
 }
+
 
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/; // Matches any character that is not a letter, number, dot, or underscore
