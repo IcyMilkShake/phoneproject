@@ -107,7 +107,7 @@
         .email::before { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23B0B0B0" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>'); }
         .password::before { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23B0B0B0" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>'); }
 
-        .submit, .loginRedirect, .googleRedirect {
+        .submit, .loginRedirect, .google-login-btn {
             width: 100%;
             padding: 15px;
             background-color: var(--accent-color);
@@ -120,7 +120,7 @@
             transition: background-color 0.3s ease;
         }
 
-        .submit:hover, .loginRedirect:hover, .googleRedirect:hover {
+        .submit:hover, .loginRedirect:hover, .google-login-btn:hover {
             background-color: var(--hover-color);
         }
 
@@ -133,22 +133,6 @@
         .g-signin2 {
             width: 100%;
             margin-top: 15px;
-        }
-        .google-login-btn {
-            display: flex;
-            align-items: center;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .google-login-btn:hover {
-            background-color: #357ae8;
         }
 
         .google-logo {
@@ -164,7 +148,7 @@
         <input id="password" type="password" class="textboxscale password" placeholder="Enter Password" autocomplete="current-password">
         <button id="submit" class="submit">Signup</button>
         <button class="google-login-btn">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Google_2015_logo.svg/1024px-Google_2015_logo.svg.png" alt="Google Logo" class="google-logo">
+            <img src="googlelogo.png" alt="Google Logo" class="google-logo">
             Login with Google
         </button>
         <p>If you already have an account</p>
