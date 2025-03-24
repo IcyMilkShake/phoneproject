@@ -20,7 +20,12 @@ const CLIENT_ID = "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleuser
 const app = express();
 const PORT = 8080;
 
-
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    next();
+  });
+  
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
