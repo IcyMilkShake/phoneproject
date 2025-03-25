@@ -26,6 +26,7 @@ function handleCredentialResponse(response) {
 // Function to send the token to the backend
 async function sendTokenToServer(id_token) {
     try {
+        console.log("send??")
         const response = await fetch('/tokenGoogleAuth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

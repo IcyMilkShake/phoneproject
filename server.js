@@ -286,7 +286,7 @@ app.get('/checkloggedin', async (req,res) => {
 
 app.post('/tokenGoogleAuth', async (req, res) => {
     const { token } = req.body;  // Extract token from the request body
-
+    console.log("hit")
     try {
         // Verify the token received from the client
         const ticket = await client.verifyIdToken({
@@ -296,9 +296,9 @@ app.post('/tokenGoogleAuth', async (req, res) => {
 
         const payload = ticket.getPayload();
         const userId = payload.sub; // User ID from Google
-
+        console.log("hitss")
         console.log('User ID:', userId);
-        
+
         // For this example, we simply return the user ID as a successful response
         res.json({ success: true, userId: userId });
 
