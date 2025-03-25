@@ -148,11 +148,11 @@
 
                 const data = await response.json();
 
-                if (response.ok) {
+                if (data.message == "You are already logged in. Redirecting to the main page...") {
                     alert(data.message)
                     window.location.href = 'main.html';
                 } else {
-                    console.error('Error checking login status');
+                    console.log(data.message)
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
