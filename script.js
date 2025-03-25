@@ -7,15 +7,16 @@ const submit = document.getElementById("submit");
 // Callback function to handle Google Sign-In response
 function handleCredentialResponse(response) {
     console.log("Encoded JWT ID token: " + response.credential);
-    
+
+    // Extract payload from the JWT token
     try {
         const payload = JSON.parse(atob(response.credential.split(".")[1]));
         console.log("User ID:", payload.sub);
         console.log("User Name:", payload.name);
         console.log("User Email:", payload.email);
         console.log("User Image URL:", payload.picture);
-    
-        // Send the token to your backend for verification
+
+        // Send the token to the backend for verification
         sendTokenToServer(response.credential);
     } catch (error) {
         console.error("Error decoding JWT token:", error);
@@ -31,11 +32,21 @@ async function sendTokenToServer(id_token) {
             body: JSON.stringify({ token: id_token })
         });
         const data = await response.json();
-        console.log('Server Response:', data);
+        
+        // Check if authentication was successful
+        if (response.ok) {
+            alert('Authentication successful');
+            // Redirect to another page after successful login
+            window.location.href = 'main.html';
+        } else {
+            alert('Authentication failed');
+        }
     } catch (error) {
         console.error('Error:', error);
+        alert('An error occurred during authentication');
     }
 }
+
 
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/;

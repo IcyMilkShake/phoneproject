@@ -14,8 +14,8 @@ const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client("764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"); // Use your Google Client ID here
-const CLIENT_ID = "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
+const client = new OAuth2Client("764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com");
+const CLIENT_ID = "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com";
 
 const app = express();
 const PORT = 8080;
@@ -284,13 +284,13 @@ app.get('/checkloggedin', async (req,res) => {
     }
 })
 
-
 app.post('/tokenGoogleAuth', async (req, res) => {
     const { token } = req.body;  // Extract token from the request body
-    
+
     try {
+        // Verify the token received from the client
         const ticket = await client.verifyIdToken({
-            idToken: token, // Pass the token from the client here
+            idToken: token,  // Pass the token from the client here
             audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
         });
 
@@ -298,9 +298,10 @@ app.post('/tokenGoogleAuth', async (req, res) => {
         const userId = payload.sub; // User ID from Google
 
         console.log('User ID:', userId);
-        // Proceed with authentication, e.g. create a session, or check the database for existing users
+        
+        // For this example, we simply return the user ID as a successful response
+        res.json({ success: true, userId: userId });
 
-        res.json({ success: true, userId: userId });  // Send a response to the client
     } catch (error) {
         console.error('Token verification failed:', error);
         res.status(401).json({ success: false, message: 'Token verification failed' });
