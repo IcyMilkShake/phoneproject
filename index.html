@@ -120,18 +120,15 @@
         <button id="submit" class="submit">Signup</button>
         <div id="g_id_onload"
         data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
-        data-callback="handleCredentialResponse">
-   </div>
-
-   <div class="g_id_signin"
-        data-type="standard"
-        data-size="large"
-        data-theme="outline"
-        data-text="signin_with">
-   </div>
-        <p>If you already have an account</p>
-        <button id="loginRedirect" class="loginRedirect">Login</button>
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false">
     </div>
+
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <p>Already have an account?</p>
+    <button id="loginRedirect" class="btn">Login</button>
+</div>
 
     <script>
         const loginRedirect = document.getElementById('loginRedirect');
@@ -158,6 +155,36 @@
             }
         }
         checkloggedin();
+
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            
+            try {
+                const payload = JSON.parse(atob(response.credential.split(".")[1]));
+                console.log("User ID:", payload.sub);
+                console.log("User Name:", payload.name);
+                console.log("User Email:", payload.email);
+                console.log("User Image URL:", payload.picture);
+            
+                sendTokenToServer(response.credential);
+            } catch (error) {
+                console.error("Error decoding JWT token:", error);
+            }
+        }
+
+        async function sendTokenToServer(id_token) {
+            try {
+                const response = await fetch('/tokenGoogleAuth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: id_token })
+                });
+                const data = await response.json();
+                console.log('Server Response:', data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
     </script>
 </body>
 </html>
