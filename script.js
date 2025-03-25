@@ -6,7 +6,7 @@ const submit = document.getElementById("submit");
 const google = document.getElementById("googlesignin");
 
 google.addEventListener('click', async () =>{
-    //idk man gimme a sex
+    console.log("clicked")
 })
 // Callback function to handle Google Sign-In response
 function handleCredentialResponse(response) {
