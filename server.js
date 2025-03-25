@@ -296,6 +296,7 @@ app.post('/tokenGoogleAuth', async (req, res) => {
 
         const payload = ticket.getPayload();
         const userId = payload.sub; // User ID from Google
+        console.log("hitsas")
         console.log("hitss")
         console.log('User ID:', userId);
 
