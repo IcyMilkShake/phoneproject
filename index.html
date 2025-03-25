@@ -6,8 +6,12 @@
      <meta name="google-signin-client_id" content="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com">
      <title>Signup</title>
      <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-     <script src="https://apis.google.com/js/platform.js" async defer></script>
-     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-<random-nonce>' https://apis.google.com; frame-src 'self' https://accounts.google.com;">
+
+     <script nonce="<random-nonce>" src="https://apis.google.com/js/platform.js" async defer></script>
+    <script nonce="<random-nonce>" src="https://accounts.google.com/gsi/client" async defer></script>
+        
      <script src="script.js" defer></script>
  
      <style>
@@ -118,20 +122,20 @@
          <input id="email" type="email" class="textboxscale email" placeholder="Enter Email" autocomplete="email">
          <input id="password" type="password" class="textboxscale password" placeholder="Enter Password" autocomplete="current-password">
          <button id="submit" class="submit">Signup</button>
-         <div id="g_id_onload"
-         data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse">
+        <div id="g_id_onload"
+             data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse">
+        </div>
+    
+        <div class="g_id_signin"
+             data-type="standard"
+             data-size="large"
+             data-theme="outline"
+             data-text="signin_with">
+        </div>
+        <p>If you already have an account</p>
+        <button id="loginRedirect" class="loginRedirect">Login</button>
     </div>
- 
-    <div class="g_id_signin"
-         data-type="standard"
-         data-size="large"
-         data-theme="outline"
-         data-text="signin_with">
-    </div>
-         <p>If you already have an account</p>
-         <button id="loginRedirect" class="loginRedirect">Login</button>
-     </div>
  
      <script>
          const loginRedirect = document.getElementById('loginRedirect');
