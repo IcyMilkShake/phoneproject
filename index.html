@@ -122,7 +122,7 @@
             data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
             data-callback="handleCredentialResponse">
         </div>
-        <div class="g_id_signin"
+        <div id="googlesignin" class="g_id_signin"
             data-type="standard"
             data-size="large"
             data-theme="outline"
@@ -138,6 +138,7 @@
         loginRedirect.addEventListener('click', () => {
             window.location.href = 'login.html'; 
         });
+
 
         async function checkloggedin() {
             try {

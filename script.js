@@ -3,7 +3,11 @@ const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
+const google = document.getElementById("googlesignin");
 
+google.addEventListener('click', async () =>{
+    //idk man gimme a sex
+})
 // Callback function to handle Google Sign-In response
 function handleCredentialResponse(response) {
     console.log("Encoded JWT ID token: " + response.credential);
@@ -12,8 +16,8 @@ function handleCredentialResponse(response) {
     try {
         const payload = JSON.parse(atob(response.credential.split(".")[1]));
         console.log("User ID:", payload.sub);
-        console.log("User Name:", payload.name);
-        console.log("User Email:", payload.email);
+        console.log("User Name:",payload.name);
+        console.log("User Email:", payload.email); 
         console.log("User Image URL:", payload.picture);
 
         // Send the token to the backend for verification
@@ -26,7 +30,7 @@ function handleCredentialResponse(response) {
 // Function to send the token to the backend
 async function sendTokenToServer(id_token) {
     try {
-        console.log("send??")
+        console.log("hit")
         const response = await fetch('/tokenGoogleAuth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
