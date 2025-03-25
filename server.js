@@ -32,6 +32,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader("Content-Security-Policy", "script-src 'self' https://apis.google.com; frame-src 'self' https://accounts.google.com;");
     
     next();
   });
