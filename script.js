@@ -5,6 +5,37 @@ const email = document.getElementById("email");
 const submit = document.getElementById("submit");
 
 // Callback function to handle Google Sign-In response
+function handleCredentialResponse(response) {
+    console.log("Encoded JWT ID token: " + response.credential);
+    
+    try {
+        const payload = JSON.parse(atob(response.credential.split(".")[1]));
+        console.log("User ID:", payload.sub);
+        console.log("User Name:", payload.name);
+        console.log("User Email:", payload.email);
+        console.log("User Image URL:", payload.picture);
+    
+        // Send the token to your backend for verification
+        sendTokenToServer(response.credential);
+    } catch (error) {
+        console.error("Error decoding JWT token:", error);
+    }
+}
+
+// Function to send the token to the backend
+async function sendTokenToServer(id_token) {
+    try {
+        const response = await fetch('/tokenGoogleAuth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: id_token })
+        });
+        const data = await response.json();
+        console.log('Server Response:', data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/;
