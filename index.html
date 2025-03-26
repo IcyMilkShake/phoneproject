@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="script.js" defer></script>
     
     <style>
         :root {
@@ -131,14 +131,65 @@
         <p>If you already have an account</p>
         <button id="loginRedirect" class="loginRedirect">Login</button>
     </div>
-
     <script>
         const loginRedirect = document.getElementById('loginRedirect');
         loginRedirect.addEventListener('click', () => {
             window.location.href = 'login.html'; 
         });
+        document.addEventListener("DOMContentLoaded", () => {
+            google.accounts.id.initialize({
+                client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
+                callback: handleCredentialResponse,
+                use_fedcm_for_prompt: true, // Enable FedCM via JavaScript
+            });
+        });
+
+        // Callback function to handle Google Sign-In response
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+
+            if (response.credential) {
+                try {
+                    const payload = JSON.parse(atob(response.credential.split(".")[1]));
+                    console.log("User ID:", payload.sub);
+                    console.log("User Name:", payload.name);
+                    console.log("User Email:", payload.email);
+                    console.log("User Image URL:", payload.picture);
+
+                    sendTokenToServer(response.credential);
+                } catch (error) {
+                    console.error("Error decoding JWT token:", error);
+                }
+            } else {
+                console.error("No credential received.");
+            }
+        }
 
 
+        // Function to send the token to the backend
+        async function sendTokenToServer(id_token) {
+            try {
+                console.log("hit")
+                const response = await fetch('/tokenGoogleAuth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: id_token })
+                });
+                const data = await response.json();
+                
+                // Check if authentication was successful
+                if (response.ok) {
+                    alert('Authentication successful');
+                    // Redirect to another page after successful login
+                    window.location.href = 'main.html';
+                } else {
+                    alert('Authentication failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during authentication');
+            }
+        }
         async function checkloggedin() {
             try {
                 const response = await fetch('/checkloggedin', {
@@ -159,6 +210,5 @@
         }
         checkloggedin();
     </script>
-    <script src="script.js" defer></script>
 </body>
 </html>
