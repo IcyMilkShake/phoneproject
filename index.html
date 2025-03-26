@@ -120,7 +120,6 @@
         <!-- Google Sign-In -->
         <div id="g_id_onload"
             data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
-            data-use_fedcm_for_prompt="true"
             data-callback="handleCredentialResponse">
         </div>
         <div id="googlesignin" class="g_id_signin"
@@ -143,7 +142,6 @@
             google.accounts.id.initialize({
                 client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
                 callback: handleCredentialResponse,
-                use_fedcm_for_prompt: true, // Enable FedCM via JavaScript
             });
             google.accounts.id.prompt();
         }
