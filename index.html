@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer onload="initializeGoogleSignIn()"></script>
     <script src="script.js" defer></script>
     
     <style>
@@ -136,13 +136,14 @@
         loginRedirect.addEventListener('click', () => {
             window.location.href = 'login.html'; 
         });
-        document.addEventListener("DOMContentLoaded", () => {
+        function initializeGoogleSignIn() {
+        // Now it's safe to use google.accounts.id
             google.accounts.id.initialize({
                 client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
                 callback: handleCredentialResponse,
                 use_fedcm_for_prompt: true, // Enable FedCM via JavaScript
             });
-        });
+        }
 
         // Callback function to handle Google Sign-In response
         function handleCredentialResponse(response) {
