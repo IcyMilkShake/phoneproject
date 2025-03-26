@@ -3,11 +3,19 @@ const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
-const google = document.getElementById("googlesignin");
-
-google.addEventListener('click', () => {
-    google.accounts.id.prompt();  // Manually trigger the One Tap prompt
+// Correcting the usage of google sign-in button
+google.accounts.id.initialize({
+    client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
+    callback: handleCredentialResponse,
+    use_fedcm_for_prompt: true // Enables FedCM via JavaScript
 });
+
+// Trigger One Tap prompt manually
+const googleButton = document.getElementById("googlesignin");
+googleButton.addEventListener('click', () => {
+    google.accounts.id.prompt();
+});
+
 
 // Callback function to handle Google Sign-In response
 function handleCredentialResponse(response) {
