@@ -116,6 +116,8 @@
         <input id="email" type="email" class="textboxscale email" placeholder="Enter Email" autocomplete="email">
         <input id="password" type="password" class="textboxscale password" placeholder="Enter Password" autocomplete="current-password">
         <button id="submit" class="submit">Signup</button>
+        
+        <!-- Google Sign-In -->
         <div id="g_id_onload"
             data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
             data-use_fedcm_for_prompt="true"
@@ -136,6 +138,7 @@
         loginRedirect.addEventListener('click', () => {
             window.location.href = 'login.html'; 
         });
+
         window.onload = function () {
             google.accounts.id.initialize({
                 client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
