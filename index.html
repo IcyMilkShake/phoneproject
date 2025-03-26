@@ -142,6 +142,7 @@
             google.accounts.id.initialize({
                 client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
                 callback: handleCredentialResponse,
+                use_fedcm_for_prompt: false,
             });
             google.accounts.id.prompt();
         }
