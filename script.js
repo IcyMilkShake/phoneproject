@@ -5,9 +5,10 @@ const email = document.getElementById("email");
 const submit = document.getElementById("submit");
 const google = document.getElementById("googlesignin");
 
-google.addEventListener('click', async () =>{
-    console.log("clicked")
-})
+google.addEventListener('click', () => {
+    google.accounts.id.prompt();  // Manually trigger the One Tap prompt
+});
+
 // Callback function to handle Google Sign-In response
 function handleCredentialResponse(response) {
     console.log("Encoded JWT ID token: " + response.credential);
