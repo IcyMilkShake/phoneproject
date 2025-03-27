@@ -148,7 +148,7 @@
         });
 
         function handleCredentialResponse(response) {
-            console.log("Response.. :", response)  
+            console.log("Response.. :", response)   
             console.log("Encoded JWT ID token: " + response.credential);
 
             if (response.credential) {
@@ -199,7 +199,7 @@
         window.onload = function () {
             google.accounts.id.initialize({
                 client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
-                callback: handle    
+                callback: handleCredentialResponse    
             });
 
             google.accounts.id.renderButton(
