@@ -14,8 +14,8 @@ const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client("764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com");
-const CLIENT_ID = "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com";
+const client = new OAuth2Client("764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com");
+const CLIENT_ID = "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com";
 
 const app = express();
 const PORT = 8080;
