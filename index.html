@@ -14,6 +14,8 @@
         
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com.apps.googleusercontent.com">
     <script src="script.js" defer></script>
     
     <style>
@@ -119,6 +121,7 @@
     </style>
 </head>
 <body>  
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
     <div class="background">
         <input id="username" type="text" class="textboxscale username" placeholder="Enter Username" autocomplete="username">
         <input id="email" type="email" class="textboxscale email" placeholder="Enter Email" autocomplete="email">
