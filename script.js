@@ -1,8 +1,32 @@
-// login.js
+// Move all inline scripts here
+
 const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
+
+const loginRedirect = document.getElementById('loginRedirect');
+loginRedirect.addEventListener('click', () => {
+    window.location.href = 'login.html'; 
+});
+
+async function checkloggedin() {
+    try {
+        const response = await fetch('/checkloggedin', { credentials: 'same-origin' });
+
+        const data = await response.json();
+
+        if (data.message == "You are already logged in. Redirecting to the main page...") {
+            alert(data.message)
+            window.location.href = 'main.html';
+        } else {
+            console.log(data.message)
+        }
+    } catch (error) {
+        console.error('Error checking login status:', error);
+    }
+}
+checkloggedin();
 
 function handleCredentialResponse(response) {
     console.log("Response.. :", response)   
@@ -29,7 +53,6 @@ function handleCredentialResponse(response) {
 
 async function sendTokenToServer(id_token) {
     try {
-        // Send the token to your server for verification
         const response = await fetch('/tokenGoogleAuth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -38,10 +61,8 @@ async function sendTokenToServer(id_token) {
 
         const data = await response.json();
 
-        // Check if authentication was successful
         if (response.ok) {
             console.log("Authentication successful!");
-            // Redirect to a different page after successful login
             window.location.href = 'main.html';
         } else {
             console.error('Authentication failed');
@@ -52,9 +73,10 @@ async function sendTokenToServer(id_token) {
         alert('An error occurred during authentication');
     }
 }
+
 window.onload = function () {
     google.accounts.id.initialize({
-        client_id: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
+        client_id: "YOUR_GOOGLE_CLIENT_ID",
         callback: handleCredentialResponse    
     });
 
@@ -63,7 +85,7 @@ window.onload = function () {
         { theme: "outline", size: "large" }
     );
 
-    google.accounts.id.prompt(); // Triggers One Tap automatically
+    google.accounts.id.prompt();
 };
 
 submit.addEventListener('click', async () => {
