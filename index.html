@@ -125,12 +125,11 @@
         
         <!-- Google Sign-In -->
         <div id="g_id_onload"
-            data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
-            data-login_uri="https://pat.ipo-servers.net/tokenGoogleAuth"
+            data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"   
             data-auto_prompt="false">
         </div>
     
-        <div class="g_id_signin"
+        <div id="googlesignin" class="g_id_signin"
             data-type="standard"
             data-size="large"
             data-theme="outline"
@@ -199,10 +198,16 @@
         window.onload = function () {
             google.accounts.id.initialize({
                 client_id: "764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com",
-                callback: handleCredentialResponse,
+                callback: handleCredentialResponse
             });
-            google.accounts.id.prompt();
-        }
+
+            google.accounts.id.renderButton(
+                document.getElementById("googlesignin"), 
+                { theme: "outline", size: "large" }
+            );
+
+            google.accounts.id.prompt(); // Triggers One Tap automatically
+        };
 
         // Callback function to handle Google Sign-In response
 
