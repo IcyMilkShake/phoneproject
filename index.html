@@ -11,7 +11,7 @@
 
 
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async></script>
     <script src="script.js" defer></script>
     
     <style>
@@ -126,13 +126,17 @@
         <!-- Google Sign-In -->
         <div id="g_id_onload"
             data-client_id="764440109211-s93lir6uhjkrv6qkld7decoi0sbg2mj3.apps.googleusercontent.com"
-            data-callback="handleCredentialResponse">
+            data-login_uri="https://pat.ipo-servers.net/tokenGoogleAuth"
+            data-auto_prompt="false">
         </div>
-        <div id="googlesignin" class="g_id_signin"
+    
+        <div class="g_id_signin"
             data-type="standard"
             data-size="large"
             data-theme="outline"
-            data-text="signin_with">
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left">
         </div>
 
         <p>If you already have an account</p>
