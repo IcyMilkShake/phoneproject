@@ -76,7 +76,7 @@ async function sendTokenToServer(id_token) {
 
 window.onload = function () {
     google.accounts.id.initialize({
-        client_id: "YOUR_GOOGLE_CLIENT_ID",
+        client_id: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
         callback: handleCredentialResponse    
     });
 
