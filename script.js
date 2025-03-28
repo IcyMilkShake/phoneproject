@@ -81,8 +81,12 @@ window.onload = function () {
     });
 
     google.accounts.id.renderButton(
-        document.getElementById("googlesignin"), 
-        { theme: "outline", size: "large" }
+        document.getElementById("googlesignin"),
+        {
+            theme: "outline",
+            size: "large",
+            text: "signin_with"
+        }
     );
 
     const googleButton = document.getElementById("googlesignin");
