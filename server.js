@@ -289,7 +289,8 @@ app.get('/checkloggedin', async (req,res) => {
     }
 })
 
-app.get('/oauth/callback', async (req, res) => {
+app.get('/oauth/callback', async (req, res) =>{
+    console.log("hit ig")
     const code = req.query.code;  // Get the code from Google's redirect
     console.log("Received code:", code);
 
