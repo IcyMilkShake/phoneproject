@@ -6,7 +6,6 @@
     <title>Signup</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://accounts.google.com https://apis.google.com; frame-src https://accounts.google.com https://accounts.google.com/gsi/; connect-src https://accounts.google.com https://oauth2.googleapis.com https://pat.ipo-servers.net;">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client"></script>
     <script src="script.js" defer></script> <!-- Link to your external JS file -->
     <style>
         :root {
@@ -124,6 +123,7 @@
             data-callback="handleCredentialResponse"
             data-auto_prompt="false">
     </div>
+    <script src="https://accounts.google.com/gsi/client"></script>
         <div id="googlesignin" class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
 
         <p>If you already have an account</p>
