@@ -89,8 +89,11 @@ window.onload = function () {
 };
 
 document.getElementById("googlesignin").addEventListener("click", function () {
+    console.log("CLICKKKKKKK")
+    // Manually trigger the Google OAuth redirect for the button flow
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com&redirect_uri=https://pat.ipo-servers.net/oauth/callback&response_type=code&scope=email profile openid`;
 });
+
 
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/;
