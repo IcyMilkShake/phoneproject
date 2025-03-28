@@ -1,4 +1,19 @@
 // Move all inline scripts here
+window.onload = function () {
+    google.accounts.id.initialize({
+        client_id: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
+        callback: handleCredentialResponse    
+    });
+
+    google.accounts.id.renderButton(
+        document.getElementById("googlesignin"),
+        {
+            theme: "outline",
+            size: "large",
+            text: "signin_with"
+        }
+    );
+};
 
 const username = document.getElementById("username");
 const pass = document.getElementById("password");
@@ -73,31 +88,14 @@ async function sendTokenToServer(id_token) {
         alert('An error occurred during authentication');
     }
 }
-
-window.onload = function () {
-    google.accounts.id.initialize({
-        client_id: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
-        callback: handleCredentialResponse    
+const googleButton = document.getElementById("googlesignin");
+if (googleButton) {
+    googleButton.addEventListener("click", function () {
+        console.log("Google Sign-In button clicked");
+        // Manually trigger the Google OAuth redirect for the button flow
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com&redirect_uri=https://pat.ipo-servers.net/oauth/callback&response_type=code&scope=email profile openid`;
     });
-
-    google.accounts.id.renderButton(
-        document.getElementById("googlesignin"),
-        {
-            theme: "outline",
-            size: "large",
-            text: "signin_with"
-        }
-    );
-
-    const googleButton = document.getElementById("googlesignin");
-    if (googleButton) {
-        googleButton.addEventListener("click", function () {
-            console.log("Google Sign-In button clicked");
-            // Manually trigger the Google OAuth redirect for the button flow
-            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com&redirect_uri=https://pat.ipo-servers.net/oauth/callback&response_type=code&scope=email profile openid`;
-        });
-    }
-};
+}
 
 
 submit.addEventListener('click', async () => {

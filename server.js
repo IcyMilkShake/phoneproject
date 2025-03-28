@@ -15,8 +15,8 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const axios = require('axios');
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client("764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com");
 const CLIENT_ID = "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com";
+const client = new OAuth2Client("764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com");
 
 const app = express();
 const PORT = 8080;
@@ -304,7 +304,7 @@ app.get('/oauth/callback', async (req, res) =>{
         const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
             client_id: CLIENT_ID,
             client_secret: "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",
-            code: code, 
+            code: code,
             grant_type: 'authorization_code',
             redirect_uri: 'https://pat.ipo-servers.net/oauth/callback'
         });
@@ -313,14 +313,13 @@ app.get('/oauth/callback', async (req, res) =>{
         console.log("Tokens received:", id_token, access_token);
 
         // Redirect the user to the frontend with the ID token
-        return res.redirect(`https://pat.ipo-servers.net/dashboard?token=${id_token}`);
+        return res.redirect(`https://pat.ipo-servers.net/main.html?token=${id_token}`);
 
     } catch (error) {
         console.error("Error exchanging code:", error.response?.data || error.message);
         return res.status(500).json({ success: false, message: "Token exchange failed" });
     }
 });
-
 app.post('/tokenGoogleAuth', async (req, res) => {
     const { token } = req.body;  // Extract token from the request body
     console.log("hit")
