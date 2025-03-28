@@ -35,7 +35,11 @@ app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
     next();
   });
-  
+app.use((err, req, res, next) => {
+    console.error('Error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+});
+
 // Set up session middleware
 app.use(session({
     secret: 'angriestbird',  // Change this to a secure random string
