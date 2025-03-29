@@ -435,10 +435,6 @@ app.post('/login', async (req, res) => {
     const { name, password, email, token } = req.body;
     try {
         let user;
-        user = await User.findOne({ email });
-        if (!user.password && user.google_id) {
-            return res.status(401).json({ message: 'Account was already made with Google please pair your account by signing up again with this Email' });
-        }
         // Check if the login is with email or username
         if (email) {
             user = await User.findOne({ email: name });
@@ -448,6 +444,10 @@ app.post('/login', async (req, res) => {
 
         if (!user || user.password !== password) {
             return res.status(401).json({ message: 'Invalid username/email or password.' });
+        }
+        
+        if (!user.password && user.google_id) {
+            return res.status(401).json({ message: 'Account was already made with Google please pair your account by signing up again with this Email' });
         }
 
         // Get user's 2FA settings
