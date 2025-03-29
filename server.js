@@ -127,10 +127,11 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         callbackURL: 'https://pat.ipo-servers.net/auth/google/callback',
     }, async (token, tokenSecret, profile, done) => {
         try {
-            console.log("ontosomt")
+            console.log("ontosomt");
+            
             // Check if a user exists with the same email in the database
             let user = await User.findOne({ email: profile.emails[0].value });
-
+    
             if (user) {
                 // If user exists, link Google login to this user
                 if (!user.googleId) {
@@ -138,11 +139,13 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                     user.google_id = profile.id;
                 }
                 await user.save(); 
-                // Proceed with user login
-                return done(null, user);
+                // Proceed with user login and pass user object
+                console.log("here isnt it");
+                return done(null, user); // Make sure done is called after the user is retrieved or created
             } else {
                 const userId = await getNextSequenceValue('userId');
-                const sequence = await getNextAvailableUsername(profile.displayName)
+                const sequence = await getNextAvailableUsername(profile.displayName);
+    
                 // If no user with this email exists, create a new user with Google info
                 user = new User({
                     userId,
@@ -151,17 +154,17 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                     email: profile.emails[0].value, // Store email
                 });
                 await user.save();
-
+    
                 // Proceed with new user login
-                console.log("konnichiwa!!!")
-                return done(null, user);
+                console.log("konnichiwa!!!");
+                return done(null, user); // Make sure done is called after user is saved
             }
         } catch (err) {
             console.error('Error during Google authentication:', err);
-            return done(err);
+            return done(err); // Handle errors correctly
         }
     }));
-
+    
     app.use(passport.initialize());
 
     app.get('/auth/google', (req, res, next) => {
