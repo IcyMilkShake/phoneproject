@@ -105,20 +105,20 @@ document.getElementById("forgotPassword").addEventListener('click', () => {
 });
 
 // Check if already logged in
-async function checkLoggedIn() {
+async function checkloggedin() {
     try {
-        const response = await fetch('/checkloggedin', {
-            credentials: 'same-origin'
-        });
+        const response = await fetch('/checkloggedin', { credentials: 'same-origin' });
 
         const data = await response.json();
 
-        if (response.ok && data.redirectUrl) {
-            window.location.href = data.redirectUrl;
+        if (data.message == "You are already logged in. Redirecting to the main page...") {
+            alert(data.message)
+            window.location.href = 'main.html';
+        } else {
+            console.log(data.message)
         }
     } catch (error) {
         console.error('Error checking login status:', error);
     }
 }
-
-checkLoggedIn();
+checkloggedin();
