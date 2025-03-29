@@ -153,6 +153,7 @@ passport.use(new GoogleStrategy({
             await user.save();
 
             // Proceed with new user login
+            console.log("konnichiwa!!!")
             return done(null, user);
         }
     } catch (err) {
@@ -165,14 +166,29 @@ app.use(passport.initialize());
 
     app.get('/auth/google',
         passport.authenticate('google', { scope: ['profile', 'email'] })
-        
     );
     
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/' }),
         async (req, res) => {
+            console.log("konnichiwa")
+            const user = await User.findOne({ email: req.user.email });
             console.log("User profile:", req.user);  // Log user data for debugging
-            req.session.user = { name: req.user.displayName };
+
+            const profilePicturePath = req.user.photos?.[0]?.value || '/uploads/profile_pics/default-profile.png';
+            
+            req.session.user = {
+                userId: user.userId,               // Database userId
+                name: req.user.displayName,         // Google display name
+                email: req.user.email,              // Google email
+                profilePicture: {
+                    path: profilePicturePath,      // Profile picture URL
+                    contentType: 'image/png',      // Default content type
+                },
+                google_id: req.user.sub,           // Google user ID
+                createdAt: user.createdAt,         // Database createdAt
+                updatedAt: user.updatedAt,         // Database updatedAt
+            };
     
             // Verify if session data is saved
             console.log("Session User:", req.session.user);
