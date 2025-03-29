@@ -214,15 +214,6 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             return res.redirect(`https://pat.ipo-servers.net/main.html`);
         }
     );
-    _json: {
-        sub: '101587512652464776682',
-        name: 'CatzStudio',
-        given_name: 'CatzStudio',
-        picture: 'https://lh3.googleusercontent.com/a/ACg8ocLzrY0xaNcSH2UtWFV5xX5df0                                                                                                                                                                                                                                             9e553P2rjZEgIC_jhkZSnY5uY9=s96-c',
-        email: 'sirapat.sermcheep@gmail.com',
-        email_verified: true
-      }
-    }
     
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
