@@ -141,7 +141,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 await user.save(); 
                 // Proceed with user login and pass user object
                 console.log("here isnt it");
-                return done(null, user); // Make sure done is called after the user is retrieved or created
+                return
             } else {
                 const userId = await getNextSequenceValue('userId');
                 const sequence = await getNextAvailableUsername(profile.displayName);
@@ -157,11 +157,11 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     
                 // Proceed with new user login
                 console.log("konnichiwa!!!");
-                return done(null, user); // Make sure done is called after user is saved
+                return
             }
         } catch (err) {
             console.error('Error during Google authentication:', err);
-            return done(err); // Handle errors correctly
+            return
         }
     }));
     
