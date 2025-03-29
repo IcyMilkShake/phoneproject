@@ -16,7 +16,6 @@ const qrcode = require('qrcode');
 const axios = require('axios');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const jwt = require('jwt-simple');
 
 const app = express();
 const PORT = 8080;
@@ -189,7 +188,7 @@ app.use(passport.session());
             console.log("Session User:", req.session.user);
 
             // Redirect with token to frontend
-            return res.redirect(`https://pat.ipo-servers.net/notes.html`);
+            return res.redirect(`https://pat.ipo-servers.net/main.html`);
         }
     );
     
@@ -395,6 +394,7 @@ app.post('/signup', async (req, res) => {
 
 
 app.get('/checkloggedin', async (req,res) => {
+    console.log(req.session.user)
     if (req.session.user) {
         return res.status(200).json({ 
             message: 'You are already logged in. Redirecting to the main page...',
