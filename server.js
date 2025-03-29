@@ -13,7 +13,6 @@ const multer = require('multer');
 const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
-const axios = require('axios');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
@@ -176,7 +175,7 @@ app.use(passport.initialize());
             console.log("User profile:", req.user);  // Log user data for debugging
 
             const profilePicturePath = req.user.photos?.[0]?.value || '/uploads/profile_pics/default-profile.png';
-            
+
             req.session.user = {
                 userId: user.userId,               // Database userId
                 name: req.user.displayName,         // Google display name
