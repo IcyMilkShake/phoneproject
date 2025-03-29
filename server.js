@@ -140,35 +140,44 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     }, async (token, tokenSecret, profile, done) => {
         try {
             console.log("ontosomt");
-            let user = await User.findOne({ google_id: profile.id });
+            console.log("shits here: ",profile)
+            // Check if a user exists with the same email in the database
+            let user = await User.findOne({ email: profile.emails[0].value });
     
-            if (!user) {
-                user = await User.findOne({ email: profile.emails[0].value });
-    
-                if (user) {
+            if (user) {
+                // If user exists, link Google login to this user
+                if (!user.google_id) {
+                    // If user doesn't have a Google ID, link Google account
                     user.google_id = profile.id;
-                } else {
-                    const userId = await getNextSequenceValue('userId');
-                    const sequence = await getNextAvailableUsername(profile.displayName);
-    
-                    user = new User({
-                        userId,
-                        google_id: profile.id,
-                        name: `${profile.displayName}#${sequence}`,
-                        email: profile.emails[0].value,
-                    });
+                    await user.save(); 
+                    console.log("saved")
                 }
+                // Proceed with user login and pass user object
+                console.log("here isnt it");
+                return done(null, user)
+            } else {
+                const userId = await getNextSequenceValue('userId');
+                const sequence = await getNextAvailableUsername(profile.displayName);
+
+                // If no user with this email exists, create a new user with Google info
+                newUser = new User({
+                    userId,
+                    google_id: profile.id,      // Store Google ID
+                    name: `${profile.displayName}#${sequence}`,   // Override the name with Google name
+                    email: profile.emails[0].value, // Store email
+                });
+                await newUser.save();
     
-                await user.save();
-                console.log("User saved:", user);
+                // Proceed with new user login
+                console.log("konnichiwa!!!");
+                return done(null, user)
             }
-    
-            return done(null, user);  // **Ensures immediate login**
         } catch (err) {
             console.error('Error during Google authentication:', err);
-            return done(err, null);
+            return done(null, err)
         }
     }));
+    
     app.use(passport.initialize());
     app.use(passport.session());
 
@@ -181,6 +190,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         passport.authenticate('google', { failureRedirect: '/' }),
         async (req, res) => {
             console.log("konnichiwa")
+            const user = await User.findOne({ email: req.user.email });
             console.log("User profile:", req.user);  // Log user data for debugging
 
             const profilePicturePath = req.user.photos?.[0]?.value || '/uploads/profile_pics/default-profile.png';
