@@ -170,25 +170,6 @@
         document.getElementById('forgotPassword').addEventListener('click', () => {
             window.location.href = 'forgotpass.html';
         });
-
-        // Check if already logged in
-        async function checkLoggedIn() {
-            try {
-                const response = await fetch('/checkloggedin', {
-                    credentials: 'same-origin'
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    window.location.href = 'main.html';
-                }
-            } catch (error) {
-                console.error('Error checking login status:', error);
-            }
-        }
-        
-        checkLoggedIn();
     </script>
 </body>
 </html>

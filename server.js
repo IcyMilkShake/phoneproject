@@ -406,36 +406,6 @@ app.get('/checkloggedin', async (req,res) => {
     }
 })
 
-app.get('/oauth/callback', async (req, res) =>{
-    console.log("hit ig")
-    const code = req.query.code;  // Get the code from Google's redirect
-    console.log("Received code:", code);
-
-    if (!code) {
-        return res.status(400).json({ success: false, message: "Authorization code missing" });
-    }
-
-    try {
-        // Exchange code for tokens
-        const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
-            client_id: CLIENT_ID,
-            client_secret: "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",
-            code: code,
-            grant_type: 'authorization_code',
-            redirect_uri: 'https://pat.ipo-servers.net/oauth/callback'
-        });
-
-        const { id_token, access_token } = tokenResponse.data;
-        console.log("Tokens received:", id_token, access_token);
-
-        // Redirect the user to the frontend with the ID token
-        return res.redirect(`https://pat.ipo-servers.net/main.html?token=${id_token}`);
-
-    } catch (error) {
-        console.error("Error exchanging code:", error.response?.data || error.message);
-        return res.status(500).json({ success: false, message: "Token exchange failed" });
-    }
-});
 app.post('/tokenGoogleAuth', async (req, res) => {
     const { token } = req.body;  // Extract token from the request body
     console.log("hit")
