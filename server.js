@@ -131,7 +131,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 { expiresIn: '1h' }
             );
             // Redirect with token to frontend
-            res.redirect(`https://pat.ipo-servers.net/main.html?token=${token}`);
+            res.redirect(`https://pat.ipo-servers.net/main.html`);
         }
     );
     app.post('/2fa-enable', async (req, res) => {
