@@ -158,15 +158,15 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             } else {
                 const userId = await getNextSequenceValue('userId');
                 const sequence = await getNextAvailableUsername(profile.displayName);
-    
+
                 // If no user with this email exists, create a new user with Google info
-                user = new User({
+                newUser = new User({
                     userId,
                     google_id: profile.id,      // Store Google ID
                     name: `${profile.displayName}#${sequence}`,   // Override the name with Google name
                     email: profile.emails[0].value, // Store email
                 });
-                await user.save();
+                await newUser.save();
     
                 // Proceed with new user login
                 console.log("konnichiwa!!!");

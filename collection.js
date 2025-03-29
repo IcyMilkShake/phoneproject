@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
         contentType: { type: String, default: 'image/png' } // Type of the image
     },
     twoFactorSecret: { type: String }, // Optional for users enabling 2FA
+    google_id: { type: Number }, // Optional for users enabling 2FA
 }, { timestamps: true }); // This adds createdAt and updatedAt fields automatically
 
 const User = mongoose.model('User', userSchema);
