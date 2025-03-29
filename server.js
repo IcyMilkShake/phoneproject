@@ -140,17 +140,17 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     }, async (token, tokenSecret, profile, done) => {
         try {
             console.log("ontosomt");
-            
+            console.log("shits here: ",profile)
             // Check if a user exists with the same email in the database
             let user = await User.findOne({ email: profile.emails[0].value });
     
             if (user) {
                 // If user exists, link Google login to this user
-                if (!user.googleId) {
+                if (!user.google_id) {
                     // If user doesn't have a Google ID, link Google account
                     user.google_id = profile.id;
+                    await user.save(); 
                 }
-                await user.save(); 
                 // Proceed with user login and pass user object
                 console.log("here isnt it");
                 return done(null, user)
@@ -196,15 +196,15 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
 
             req.session.user = {
                 userId: user.userId,               // Database userId
-                name: req.user.displayName,         // Google display name
+                name: req.user.name,         // Google display name
                 email: req.user.email,              // Google email
                 profilePicture: {
                     path: profilePicturePath,      // Profile picture URL
                     contentType: 'image/png',      // Default content type
                 },
-                google_id: req.user.sub,           // Google user ID
+                google_id: req.user.id,           // Google user ID
                 createdAt: user.createdAt,         // Database createdAt
-                updatedAt: user.updatedAt,         // Database updatedAt
+                updatedAt: Date.now(),         // Database updatedAt
             };
     
             // Verify if session data is saved
@@ -214,6 +214,15 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             return res.redirect(`https://pat.ipo-servers.net/main.html`);
         }
     );
+    _json: {
+        sub: '101587512652464776682',
+        name: 'CatzStudio',
+        given_name: 'CatzStudio',
+        picture: 'https://lh3.googleusercontent.com/a/ACg8ocLzrY0xaNcSH2UtWFV5xX5df0                                                                                                                                                                                                                                             9e553P2rjZEgIC_jhkZSnY5uY9=s96-c',
+        email: 'sirapat.sermcheep@gmail.com',
+        email_verified: true
+      }
+    }
     
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
