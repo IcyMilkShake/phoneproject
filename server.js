@@ -46,7 +46,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        secure: true, 
+        secure: process.env.NODE_ENV === 'production', 
         sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000  // Cookie expiration: 1 day
     }
@@ -160,6 +160,8 @@ passport.use(new GoogleStrategy({
         return done(err);
     }
 }));
+
+app.use(passport.initialize());
 
     app.get('/auth/google',
         passport.authenticate('google', { scope: ['profile', 'email'] })
