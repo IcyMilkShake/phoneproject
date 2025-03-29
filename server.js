@@ -394,7 +394,6 @@ app.post('/signup', async (req, res) => {
 
 
 app.get('/checkloggedin', async (req,res) => {
-    console.log(req.session.user)
     if (req.session.user) {
         return res.status(200).json({ 
             message: 'You are already logged in. Redirecting to the main page...',
