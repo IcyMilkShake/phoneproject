@@ -14,9 +14,9 @@ const cookieParser = require('cookie-parser');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const axios = require('axios');
-const { OAuth2Client } = require('google-auth-library');
-const CLIENT_ID = "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com";
-const client = new OAuth2Client("764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com");
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const jwt = require('jwt-simple');
 
 const app = express();
 const PORT = 8080;
@@ -53,6 +53,27 @@ app.use(session({
     }
 }));    
 
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.use(new GoogleStrategy({
+    clientID: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
+    clientSecret: "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",
+    callbackURL: 'https://pat.ipo-servers.net/auth/google/callback',
+}, (token, tokenSecret, profile, done) => {
+    // Save only the user's name (or any other specific field)
+    req.session.user = { name: profile.displayName };  // Save just the name to session
+    return done(null, profile);
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -74,6 +95,7 @@ const transporter = nodemailer.createTransport({
         pass: 'bwun jaxk lgnn leal'
     }
 });
+
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/API')
     .then(() => console.log('MongoDB connected'))
@@ -92,7 +114,25 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         );
         return nextId;
     }
+    app.get('/auth/google',
+        passport.authenticate('google', { scope: ['profile', 'email'] })
+    );
     
+    app.get('/auth/google/callback',
+        passport.authenticate('google', { failureRedirect: '/' }),
+        (req, res) => {
+            // Generate JWT token after successful login
+            const user = req.session.user; // Get the user from the session
+            const token = jwt.encode(
+                { email: user.emails[0].value, name: user.displayName },
+                "angriestofthebirds",//jwt secret apparently :)))
+                'HS256',
+                { expiresIn: '1h' }
+            );
+            // Redirect with token to frontend
+            res.redirect(`https://pat.ipo-servers.net/main?token=${token}`);
+        }
+    );
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
         const userId = req.session.user?.userId;

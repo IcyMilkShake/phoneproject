@@ -1,20 +1,3 @@
-// Move all inline scripts here
-window.onload = function () {
-    google.accounts.id.initialize({
-        client_id: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
-        callback: handleCredentialResponse    
-    });
-
-    google.accounts.id.renderButton(
-        document.getElementById("googlesignin"),
-        {
-            theme: "outline",
-            size: "large",
-            text: "signin_with"
-        }
-    );
-};
-
 const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
@@ -42,61 +25,6 @@ async function checkloggedin() {
     }
 }
 checkloggedin();
-
-function handleCredentialResponse(response) {
-    console.log("Response.. :", response)   
-    console.log("Encoded JWT ID token: " + response.credential);
-
-    if (response.credential) {
-        try {
-            // Decode the JWT token to get user information
-            const payload = JSON.parse(atob(response.credential.split(".")[1]));
-            console.log("User ID:", payload.sub);
-            console.log("User Name:", payload.name);
-            console.log("User Email:", payload.email);
-            console.log("User Image URL:", payload.picture);
-
-            // Send the token to the backend for verification
-            sendTokenToServer(response.credential);
-        } catch (error) {
-            console.error("Error decoding JWT token:", error);
-        }
-    } else {
-        console.error("No credential received.");
-    }
-}
-
-async function sendTokenToServer(id_token) {
-    try {
-        const response = await fetch('/tokenGoogleAuth', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: id_token })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            console.log("Authentication successful!");
-            window.location.href = 'main.html';
-        } else {
-            console.error('Authentication failed');
-            alert('Authentication failed');
-        }
-    } catch (error) {
-        console.error('Error during token verification:', error);
-        alert('An error occurred during authentication');
-    }
-}
-const googleButton = document.getElementById("googlesignin");
-if (googleButton) {
-    googleButton.addEventListener("click", function () {
-        console.log("Google Sign-In button clicked");
-        // Manually trigger the Google OAuth redirect for the button flow
-        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com&redirect_uri=https://pat.ipo-servers.net/oauth/callback&response_type=code&scope=email profile openid`;
-    });
-}
-
 
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/;
