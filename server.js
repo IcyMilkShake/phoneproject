@@ -161,10 +161,6 @@ passport.use(new GoogleStrategy({
     }
 }));
 
-app.use(passport.initialize());
-app.use(passport.session());
-
-
     app.get('/auth/google',
         passport.authenticate('google', { scope: ['profile', 'email'] })
         
