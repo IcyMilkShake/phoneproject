@@ -205,7 +205,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 },
                 google_id: req.user.id,           // Google user ID
                 createdAt: user.createdAt,         // Database createdAt
-                updatedAt: Date.now(),         // Database updatedAt
+                updatedAt: user.updatedAt,         // Database updatedAt
             };
             
             // Verify if session data is saved
