@@ -326,6 +326,7 @@ app.post('/send-email', (req, res) => {
 // API endpoint to fetch users
 app.get('/users', async (req, res) => {
     try {
+        console.log(req.session.user)
         if (!req.session.user) {
             return res.json({ message: 'Please Login First' });
         }
@@ -445,7 +446,7 @@ app.post('/login', async (req, res) => {
         if (!user || user.password !== password) {
             return res.status(401).json({ message: 'Invalid username/email or password.' });
         }
-        
+
         if (!user.password && user.google_id) {
             return res.status(401).json({ message: 'Account was already made with Google please pair your account by signing up again with this Email' });
         }
@@ -482,6 +483,7 @@ app.post('/login', async (req, res) => {
 
         // If we get here, either 2FA is disabled or the token was valid
         req.session.user = user; // Set the user in the session
+        console.log(req.session.user)
         res.status(200).json({ 
             message: 'Login successful!', 
             redirectUrl: '/main.html',
