@@ -150,6 +150,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                     // If user doesn't have a Google ID, link Google account
                     user.google_id = profile.id;
                     await user.save(); 
+                    console.log("saved")
                 }
                 // Proceed with user login and pass user object
                 console.log("here isnt it");
@@ -204,9 +205,9 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 },
                 google_id: req.user.id,           // Google user ID
                 createdAt: user.createdAt,         // Database createdAt
-                updatedAt: Date.now(),         // Database updatedAt
+                updatedAt: user.updatedAt,         // Database updatedAt
             };
-    
+            
             // Verify if session data is saved
             console.log("Session User:", req.session.user);
 
