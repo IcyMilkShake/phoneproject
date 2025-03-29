@@ -121,19 +121,24 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/' }),
         (req, res) => {
-            // Generate JWT token after successful login
-            console.log(req.user)
-            req.session.user = { name: req.user.displayName };  // Save just the name to session
+            // Save user to session
+            console.log("User profile:", req.user);  // Log user data for debugging
+            req.session.user = { name: req.user.displayName };
+    
+            // Verify if session data is saved
+            console.log("Session User:", req.session.user);
+    
             const token = jwt.encode(
                 { email: req.user.emails[0].value, name: req.user.displayName },
-                "angriestofthebirds",//jwt secret apparently :)))
+                "angriestofthebirds", // Secret for JWT
                 'HS256',
                 { expiresIn: '1h' }
             );
             // Redirect with token to frontend
-            res.redirect(`https://pat.ipo-servers.net/main.html`);
+            res.redirect(`https://pat.ipo-servers.net/main.html?token=${token}`);
         }
     );
+    
     app.post('/2fa-enable', async (req, res) => {
         const { bool } = req.body;
         const userId = req.session.user?.userId;
