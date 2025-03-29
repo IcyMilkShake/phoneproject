@@ -153,7 +153,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 await user.save(); 
                 // Proceed with user login and pass user object
                 console.log("here isnt it");
-                return
+                return done(null, user)
             } else {
                 const userId = await getNextSequenceValue('userId');
                 const sequence = await getNextAvailableUsername(profile.displayName);
@@ -169,17 +169,17 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     
                 // Proceed with new user login
                 console.log("konnichiwa!!!");
-                return
+                return done(null, user)
             }
         } catch (err) {
             console.error('Error during Google authentication:', err);
-            return
+            return done(null, err)
         }
     }));
     
     app.use(passport.initialize());
     app.use(passport.session());
-    
+
     app.get('/auth/google', (req, res, next) => {
         console.log('Starting Google authentication...');
         next();
