@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     userId: { type: Number, unique: true, required: true }, // Incrementing ID
     name: { type: String, required: true },
     email: { type: String, required: true },
-    password: { type: String, required: true },
+    password: { type: String },
     profilePicture: {
         path: { type: String, default: '/uploads/profile_pics/default-profile.png' }, // Path to profile picture
         contentType: { type: String, default: 'image/png' } // Type of the image

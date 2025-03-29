@@ -557,6 +557,7 @@ app.post('/reset_resetpass', async (req, res) => {
 
         // Update the password
         user.password = password;
+        user.updatedAt = Date.now()
         console.log(password);
         await user.save();
 
