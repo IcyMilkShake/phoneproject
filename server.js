@@ -52,14 +52,6 @@ app.use(session({
     }
 }));    
 
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-
-passport.deserializeUser((user, done) => {
-    done(null, user);
-});
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, 'uploads/profile_pics'));
