@@ -61,19 +61,6 @@ passport.deserializeUser((user, done) => {
     done(null, user);
 });
 
-passport.use(new GoogleStrategy({
-    clientID: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
-    clientSecret: "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",
-    callbackURL: 'https://pat.ipo-servers.net/auth/google/callback',
-}, (token, tokenSecret, profile, done) => {
-    // Save only the user's name (or any other specific field)
-    return done(null, profile);
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, 'uploads/profile_pics'));
@@ -100,6 +87,36 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
+    
+    // Function to get the next available sequence for a given base username
+    async function getNextAvailableUsername(baseName) {
+        // Find all usernames that start with the base name and a '#'
+        const existingNames = await User.find({ name: { $regex: `^${baseName}#\\d+` } })
+                                        .sort({ name: 1 }); // Sort names in ascending order
+
+        let sequence = 1; // Start with #1
+        
+        // If there are existing names, find the next available number
+        if (existingNames.length > 0) {
+            // Loop through existing names to find the first missing sequence number
+            for (let i = 0; i < existingNames.length; i++) {
+                // Extract the numeric part of the name (e.g., 'name#1' -> 1)
+                const currentSequence = parseInt(existingNames[i].name.split('#')[1], 10);
+
+                // If there's a gap, use that number
+                if (currentSequence !== sequence) {
+                    break;
+                }
+
+                // Otherwise, move to the next number in the sequence
+                sequence++;
+            }
+        }
+
+        return sequence; // Return the next available sequence number
+    }
+
+
     async function getNextSequenceValue(sequenceName) {
         const maxUserId = await User.find().sort({ userId: -1 }).limit(1).select('userId');
         let nextId = 1;
@@ -113,6 +130,50 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         );
         return nextId;
     }
+    
+passport.use(new GoogleStrategy({
+    clientID: "764440109211-519r5j9m6cfh1ovuiu0vujo0f2ufaldg.apps.googleusercontent.com",
+    clientSecret: "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",
+    callbackURL: 'https://pat.ipo-servers.net/auth/google/callback',
+}, async (token, tokenSecret, profile, done) => {
+    try {
+        // Check if a user exists with the same email in the database
+        let user = await User.findOne({ email: profile.emails[0].value });
+
+        if (user) {
+            // If user exists, link Google login to this user
+            if (!user.googleId) {
+                // If user doesn't have a Google ID, link Google account
+                user.google_id = profile.id;
+            }
+            await user.save(); 
+            // Proceed with user login
+            return done(null, user);
+        } else {
+            const userId = await getNextSequenceValue('userId');
+            const sequence = await getNextAvailableUsername(profile.displayName)
+            // If no user with this email exists, create a new user with Google info
+            user = new User({
+                userId,
+                google_id: profile.id,      // Store Google ID
+                name: `${profile.displayName}#${sequence}`,   // Override the name with Google name
+                email: profile.emails[0].value, // Store email
+            });
+            await user.save();
+
+            // Proceed with new user login
+            return done(null, user);
+        }
+    } catch (err) {
+        console.error('Error during Google authentication:', err);
+        return done(err);
+    }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
     app.get('/auth/google',
         passport.authenticate('google', { scope: ['profile', 'email'] })
         
@@ -120,22 +181,15 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/' }),
-        (req, res) => {
-            // Save user to session
+        async (req, res) => {
             console.log("User profile:", req.user);  // Log user data for debugging
             req.session.user = { name: req.user.displayName };
     
             // Verify if session data is saved
             console.log("Session User:", req.session.user);
-    
-            const token = jwt.encode(
-                { email: req.user.emails[0].value, name: req.user.displayName },
-                "angriestofthebirds", // Secret for JWT
-                'HS256',
-                { expiresIn: '1h' }
-            );
+
             // Redirect with token to frontend
-            res.redirect(`https://pat.ipo-servers.net/main.html?token=${token}`);
+            return res.redirect(`https://pat.ipo-servers.net/main.html`);
         }
     );
     
@@ -296,16 +350,27 @@ app.get('/testing',async (req, res) => {
 app.post('/signup', async (req, res) => {
     const { name, email, password } = req.body;
     try {
-        const existingUser = await User.findOne({ name });
-        if (existingUser) {
-            return res.status(200).json({ message: 'Username already exists!' });
-        }
+        // Check if name already exists (without # suffix)
+        let baseName = name;
+        // Get the next available sequence number
+        const sequence = await getNextAvailableUsername(baseName);
+        // Append the sequence number (e.g., "username#1", "username#2", etc.)
+        baseName = `${baseName}#${sequence}`;
 
+        // Check if email already exists
         const existingEmail = await User.findOne({ email });
         if (existingEmail) {
-            return res.status(200).json({ message: 'Email already exists!' });
+            // Check if the user has a Google account linked and no password
+            if (existingEmail.google_id && !existingEmail.password) {
+                existingEmail.password = password
+                await existingEmail.save(); // Save to the database
+                res.status(201).json({ message: 'User paired with google successfully!' });
+            } else {
+                return res.status(200).json({ message: 'Email already exists!' });
+            }
         }
 
+        // Get a new user ID
         const userId = await getNextSequenceValue('userId');
         
         // Set the default profile picture path
@@ -313,7 +378,7 @@ app.post('/signup', async (req, res) => {
         
         const newUser = new User({
             userId,
-            name,
+            name: baseName,  // Use the modified name with # suffix
             email,
             password,
             profilePicture: { path: defaultProfilePicture, contentType: 'image/png' }, // Default profile picture
@@ -326,6 +391,8 @@ app.post('/signup', async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 });
+
+
 
 app.get('/checkloggedin', async (req,res) => {
     if (req.session.user) {
@@ -399,7 +466,10 @@ app.post('/login', async (req, res) => {
     const { name, password, email, token } = req.body;
     try {
         let user;
-
+        user = await User.findOne({ email });
+        if (!user.password && user.google_id) {
+            return res.status(401).json({ message: 'Account was already made with Google please pair your account by signing up again with this Email' });
+        }
         // Check if the login is with email or username
         if (email) {
             user = await User.findOne({ email: name });
@@ -744,24 +814,31 @@ app.post('/changeuser', async (req, res) => {
         const { username } = req.body;
         const userId = req.session.user.userId;
         const user = await User.findOne({ userId: userId });
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        const existuser = await User.findOne({ name: username });
-        if (!existuser) {
-            user.name = username
-            await user.save()
-            const newuser = await User.findOne({ name: username });
-            req.session.user = newuser; // Store user info in session
-            return res.status(201).json({message: "Successfully Changed name"});
-        }else{
-            return res.status(201).json({message: "Username taken"});
-        }
+        const baseName = username; // Start with the base username
+
+        // If someone already has this base name, check sequence availability
+        const sequence = await getNextAvailableUsername(baseName);
+
+        // Append the sequence number (e.g., "username#1", "username#2", etc.)
+        const newUsername = `${baseName}#${sequence}`;
+
+        // Update the user's name with the new username
+        user.name = newUsername;
+        await user.save();
+
+        // Update session with the new username
+        req.session.user.name = newUsername;
+        return res.status(201).json({ message: `Username changed successfully to ${newUsername}` });
     } catch (error) {
         console.error('Error changing name:', error);
         res.status(500).json({ message: 'Error changing name', error: error.message });
     }
 });
+
 // Serve static files
 app.use(express.static(path.join(__dirname)));
 
