@@ -71,7 +71,19 @@ const transporter = nodemailer.createTransport({
         pass: 'bwun jaxk lgnn leal'
     }
 });
-
+passport.serializeUser((user, done) => {
+    // Just store the user ID or any unique identifier (e.g., Google ID)
+    done(null, user.userId);  // Store userId or another unique identifier
+});
+passport.deserializeUser(async (userId, done) => {
+    try {
+        // Fetch the full user object using the ID you serialized (e.g., userId)
+        const user = await User.findOne({ userId });  // Or whatever identifier you used
+        done(null, user);  // Pass the user object to req.user
+    } catch (err) {
+        done(err);  // In case of error, pass the error to done
+    }
+});
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/API')
     .then(() => console.log('MongoDB connected'))
@@ -166,7 +178,8 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     }));
     
     app.use(passport.initialize());
-
+    app.use(passport.session());
+    
     app.get('/auth/google', (req, res, next) => {
         console.log('Starting Google authentication...');
         next();
