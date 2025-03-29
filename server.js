@@ -205,7 +205,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 },
                 google_id: req.user.id,           // Google user ID
                 createdAt: user.createdAt,         // Database createdAt
-                updatedAt: user.updatedAt,         // Database updatedAt
+                updatedAt: Date.now(),         // Database updatedAt
             };
             
             // Verify if session data is saved
@@ -819,6 +819,7 @@ app.post('/changeuser', async (req, res) => {
 
         // Update the user's name with the new username
         user.name = newUsername;
+        user.updatedAt = Date.now()
         await user.save();
 
         // Update session with the new username
