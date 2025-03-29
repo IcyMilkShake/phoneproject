@@ -67,7 +67,6 @@ passport.use(new GoogleStrategy({
     callbackURL: 'https://pat.ipo-servers.net/auth/google/callback',
 }, (token, tokenSecret, profile, done) => {
     // Save only the user's name (or any other specific field)
-    req.session.user = { name: profile.displayName };  // Save just the name to session
     return done(null, profile);
 }));
 
@@ -116,15 +115,17 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     }
     app.get('/auth/google',
         passport.authenticate('google', { scope: ['profile', 'email'] })
+        
     );
     
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/' }),
         (req, res) => {
             // Generate JWT token after successful login
-            const user = req.session.user; // Get the user from the session
+            console.log(req.user)
+            req.session.user = { name: req.user.displayName };  // Save just the name to session
             const token = jwt.encode(
-                { email: user.emails[0].value, name: user.displayName },
+                { email: req.user.emails[0].value, name: req.user.displayName },
                 "angriestofthebirds",//jwt secret apparently :)))
                 'HS256',
                 { expiresIn: '1h' }
