@@ -388,7 +388,8 @@ app.post('/signup', async (req, res) => {
             if (existingEmail.google_id && !existingEmail.password) {
                 existingEmail.password = password
                 await existingEmail.save(); // Save to the database
-                res.status(201).json({ message: 'User paired with google successfully!' });
+                console.log('User paired with google successfully!')
+                res.status(201).json({ message: 'User created successfully!' });
             } else {
                 return res.status(200).json({ message: 'Email already exists!' });
             }
