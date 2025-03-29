@@ -189,7 +189,7 @@ app.use(passport.session());
             console.log("Session User:", req.session.user);
 
             // Redirect with token to frontend
-            return res.redirect(`https://pat.ipo-servers.net/main.html`);
+            return res.redirect(`https://pat.ipo-servers.net/notes.html`);
         }
     );
     
@@ -523,10 +523,6 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 });
-
-
-
-
 
 app.post('/check_resetpass', async (req, res) => {
     const { name, email } = req.body;
