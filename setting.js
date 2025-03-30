@@ -436,11 +436,7 @@ edituser.addEventListener("click", async () =>{
                 body: JSON.stringify({ username: newContent })
             });
             const data = await response.json();
-            if (response.ok) {
-                alert(data.message)
-            } else {
-                alert('Failed to change username');
-            }
+            alert(data.message)
         } catch (error) {
             console.error('Error changing user:', error);
         }
