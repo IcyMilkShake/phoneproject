@@ -476,9 +476,11 @@ app.post('/login', async (req, res) => {
         }
 
         if (!user.password && user.google_id) {
+            console.log("accoutn pair in signup pls")
             return res.status(401).json({ message: 'Account was already made with Google please pair your account by signing up again with this Email' });
         }
-
+        console.log(user.password)
+        console.log(user.google_id)
         // Get user's 2FA settings
         const userSettings = await Setting.findOne({ userId: user.userId });
         // If 2FA is enabled but no token provided, request 2FA
