@@ -471,14 +471,15 @@ app.post('/login', async (req, res) => {
             user = await User.findOne({ name: name });
         }
 
-        if (!user || user.password !== password) {
-            return res.status(401).json({ message: 'Invalid username/email or password.' });
-        }
-
         if (!user.password && user.google_id) {
             console.log("accoutn pair in signup pls")
             return res.status(401).json({ message: 'Account was already made with Google please pair your account by signing up again with this Email' });
         }
+        
+        if (!user || user.password !== password) {
+            return res.status(401).json({ message: 'Invalid username/email or password.' });
+        }
+
         console.log(user.password)
         console.log(user.google_id)
         // Get user's 2FA settings
