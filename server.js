@@ -195,9 +195,8 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         async (req, res) => {
             console.log("konnichiwa")
             const user = await User.findOne({ email: req.user.email });
+            const profilePicturePath = user.profilePicture.path;
             console.log("User profile:", req.user);  // Log user data for debugging
-
-            const profilePicturePath = req.user.picture || '/uploads/profile_pics/default-profile.png';
 
             req.session.user = {
                 userId: user.userId,               // Database userId
