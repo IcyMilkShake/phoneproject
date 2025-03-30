@@ -89,7 +89,26 @@ async function fetching() {
             return;
         }
 
-        usersName.textContent = `Welcome ${result.name}`;
+        const resultName = result.name;
+        const nameParts = resultName.split('#');
+        const displayName = nameParts[0]; // The part before the '#'
+        const sequenceNumber = nameParts[1]; // The part after the '#'
+
+        const usersName = document.getElementById('usersName');
+
+        // Create a span element for the name part (before the '#')
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = displayName;
+
+        // Create a span element for the sequence number part (after the '#')
+        const numberSpan = document.createElement('span');
+        numberSpan.textContent = `#${sequenceNumber}`;
+        numberSpan.style.opacity = '0.4'; // Apply 40% opacity to the number part
+
+        // Append the elements to the usersName container
+        usersName.textContent = 'Welcome ';
+        usersName.appendChild(nameSpan);
+        usersName.appendChild(numberSpan,"!");
         await fetchpic(); // Fetch the profile picture
     } catch (error) {
         console.error('Error fetching user info:', error);

@@ -819,6 +819,9 @@ app.post('/changeuser', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+        if (user.name == username) {
+            return res.status(404).json({ message: 'Please choose a different name' });
+        }
         const baseName = username; // Start with the base username
 
         // If someone already has this base name, check sequence availability
