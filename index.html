@@ -59,6 +59,19 @@
             margin: 10px 0;
             position: relative;
         }
+        .usertextboxscale {
+            width: 70%; /* Set width to 70% */
+            padding: 15px 15px 15px 45px;
+            background-color: #2A2A2A;
+            border: 1px solid #3A3A3A;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+            margin: 10px 0;
+            position: relative;
+            float: left; /* Align to the left side */
+        }
+
 
         .textboxscale::placeholder {
             color: var(--text-secondary);
@@ -113,7 +126,7 @@
 
     <div class="background">
         <!-- Form fields and Google Sign-In button -->
-        <input id="username" type="text" class="textboxscale username" placeholder="Enter Username" autocomplete="username">
+        <input id="username" type="text" class="usertextboxscale username" placeholder="Enter Username" autocomplete="username">
         <input id="email" type="email" class="textboxscale email" placeholder="Enter Email" autocomplete="email">
         <input id="password" type="password" class="textboxscale password" placeholder="Enter Password" autocomplete="current-password">
         <button id="submit" class="submit">Signup</button>
