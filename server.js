@@ -139,8 +139,6 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         callbackURL: 'https://pat.ipo-servers.net/auth/google/callback',
     }, async (token, tokenSecret, profile, done) => {
         try {
-            console.log("ontosomt");
-            console.log("shits here: ",profile)
             // Check if a user exists with the same email in the database
             let user = await User.findOne({ email: profile.emails[0].value });
     
@@ -150,10 +148,8 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                     // If user doesn't have a Google ID, link Google account
                     user.google_id = profile.id;
                     await user.save(); 
-                    console.log("saved")
                 }
                 // Proceed with user login and pass user object
-                console.log("here isnt it");
                 return done(null, user)
             } else {
                 const userId = await getNextSequenceValue('userId');
@@ -173,7 +169,6 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 await newUser.save();
     
                 // Proceed with new user login
-                console.log("konnichiwa!!!");
                 return done(null, newUser)
             }
         } catch (err) {
@@ -193,11 +188,8 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     app.get('/auth/google/callback',
         passport.authenticate('google', { failureRedirect: '/' }),
         async (req, res) => {
-            console.log("konnichiwa")
             const user = await User.findOne({ email: req.user.email });
             const profilePicturePath = user.profilePicture.path;
-            console.log("User profile:", req.user);  // Log user data for debugging
-
             req.session.user = {
                 userId: user.userId,               // Database userId
                 name: req.user.name,         // Google display name
