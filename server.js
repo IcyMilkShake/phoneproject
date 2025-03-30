@@ -158,13 +158,17 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             } else {
                 const userId = await getNextSequenceValue('userId');
                 const sequence = await getNextAvailableUsername(profile.displayName);
-
+                const profilePicturePath = profile.photos[0].value || '/uploads/profile_pics/default-profile.png';
                 // If no user with this email exists, create a new user with Google info
                 newUser = new User({
                     userId,
                     google_id: profile.id,      // Store Google ID
                     name: `${profile.displayName}#${sequence}`,   // Override the name with Google name
                     email: profile.emails[0].value, // Store email
+                    profilePicture: {
+                        path: profilePicturePath,      // Profile picture URL
+                        contentType: 'image/png',      // Default content type
+                    },
                 });
                 await newUser.save();
     
@@ -193,7 +197,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             const user = await User.findOne({ email: req.user.email });
             console.log("User profile:", req.user);  // Log user data for debugging
 
-            const profilePicturePath = req.user.photos?.[0]?.value || '/uploads/profile_pics/default-profile.png';
+            const profilePicturePath = req.user.picture || '/uploads/profile_pics/default-profile.png';
 
             req.session.user = {
                 userId: user.userId,               // Database userId
@@ -203,7 +207,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                     path: profilePicturePath,      // Profile picture URL
                     contentType: 'image/png',      // Default content type
                 },
-                google_id: req.user.id,           // Google user ID
+                google_id: req.user.sub,           // Google user ID
                 createdAt: user.createdAt,         // Database createdAt
                 updatedAt: user.updatedAt,         // Database updatedAt
             };
