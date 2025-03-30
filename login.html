@@ -58,7 +58,7 @@
             position: relative;
         }
 
-        .login, .signupRedirect {
+        .login, .signupRedirect, .google-login-btn {
             width: 100%;
             padding: 15px;
             background-color: var(--accent-color);
@@ -141,6 +141,24 @@
             margin-top: 15px;
             transition: background-color 0.3s ease;
         }
+        .google-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ebebeb;
+            color: #242424;
+            padding: 15px;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+        .google-login-btn:hover {
+            background-color: #c2c2c2;
+        }
+        .google-logo {
+            width: 20px;
+            margin-right: 10px;
+            order: -1; /* Moves the logo to the left */
+        }
     </style>
 </head>
 <body>
@@ -149,6 +167,9 @@
             <input id="username" type="text" class="textboxscale username" placeholder="Enter Username or Email" autocomplete="username">
             <input id="password" type="password" class="textboxscale password" placeholder="Enter Password" autocomplete="current-password">
             <button id="login" class="login">Login</button>
+            <a href="/auth/google" class="google-login-btn">
+                Sign in with Google
+            </a>
             <p class="own">If you don't already own an account</p>
             <button id="signupRedirect" class="signupRedirect">Signup</button>
             <p class="forgor" id="forgotPassword">Forgot Password</p>

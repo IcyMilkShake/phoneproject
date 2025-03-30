@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     userId: { type: Number, unique: true, required: true }, // Incrementing ID
     name: { type: String, required: true },
+    displayName: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String },
     profilePicture: {

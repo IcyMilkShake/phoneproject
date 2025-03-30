@@ -160,6 +160,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                     userId,
                     google_id: profile.id,      // Store Google ID
                     name: `${profile.displayName}#${sequence}`,   // Override the name with Google name
+                    displayName: profile.displayName,
                     email: profile.emails[0].value, // Store email
                     profilePicture: {
                         path: profilePicturePath,      // Profile picture URL
@@ -371,6 +372,7 @@ app.post('/signup', async (req, res) => {
     try {
         // Check if name already exists (without # suffix)
         let baseName = name;
+        let displayName = name
         // Get the next available sequence number
         const sequence = await getNextAvailableUsername(baseName);
         // Append the sequence number (e.g., "username#1", "username#2", etc.)
@@ -399,6 +401,7 @@ app.post('/signup', async (req, res) => {
         const newUser = new User({
             userId,
             name: baseName,  // Use the modified name with # suffix
+            displayName: displayName,
             email,
             password,
             profilePicture: { path: defaultProfilePicture, contentType: 'image/png' }, // Default profile picture
@@ -811,7 +814,7 @@ app.post('/changeuser', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (user.name == username) {
+        if (user.displayName == username) {
             return res.status(404).json({ message: 'Please choose a different name' });
         }
         const baseName = username; // Start with the base username
@@ -824,6 +827,7 @@ app.post('/changeuser', async (req, res) => {
 
         // Update the user's name with the new username
         user.name = newUsername;
+        user.displayName = baseName;
         user.updatedAt = Date.now()
         await user.save();
 
