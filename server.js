@@ -170,7 +170,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     
                 // Proceed with new user login
                 console.log("konnichiwa!!!");
-                return done(null, user)
+                return done(null, newUser)
             }
         } catch (err) {
             console.error('Error during Google authentication:', err);
