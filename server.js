@@ -177,8 +177,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 const sequence = await getUniqueTag(profile.displayName);
                 const profilePicturePath = profile.photos[0].value || '/uploads/profile_pics/default-profile.png';
                 // If no user with this email exists, create a new user with Google info
-                const removedSpace = profile.displayName
-                removedSpace.replace(/\s+/g, '');
+                const removedSpace = profile.displayName.replace(/\s+/g, ''); // Fix here
                 newUser = new User({
                     userId,
                     google_id: profile.id,      // Store Google ID
@@ -224,7 +223,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                     path: profilePicturePath,      // Profile picture URL
                     contentType: 'image/png',      // Default content type
                 },
-                google_id: req.user.sub,           // Google user ID
+                google_id: user.google_id,           // Google user ID
                 createdAt: user.createdAt,         // Database createdAt
                 updatedAt: user.updatedAt,         // Database updatedAt
                 tag: user.tag,
