@@ -388,7 +388,7 @@ app.get('/users', async (req, res) => {
 
         const user = await User.findOne({ userId: req.session.user.userId });
         if (user) {
-            res.json({ userId: user.userId, name: user.name });
+            res.json({ userId: user.userId, name: user.name, displayName: user.displayName, tag: user.tag });
         } else {
             res.json({ message: 'User not found' });
         }
