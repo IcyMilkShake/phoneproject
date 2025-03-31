@@ -447,7 +447,7 @@ edituser.addEventListener("click", async () =>{
 })
 edittag.addEventListener("click", async () =>{
     const newContent = prompt('Enter your new tag');
-    if (!/^\d{4}$/.test(newContent) || newContent.length == 4) {
+    if (!/^\d+$/.test(newContent) || newContent.length == 4) {
         alert("Tag must only be Numbers and has the exact length of 4");
     }else{
         try {
