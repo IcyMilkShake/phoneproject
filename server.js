@@ -872,13 +872,49 @@ app.post('/changeuser', async (req, res) => {
 
         // Update session with the new username
         req.session.user.name = newUsername;
+        req.session.user.displayName = baseName;
         return res.status(201).json({ message: `Username changed successfully to ${newUsername}` });
     } catch (error) {
         console.error('Error changing name:', error);
         res.status(500).json({ message: 'Error changing name', error: error.message });
     }
 });
+app.post('/changetag', async (req, res) => {
+    try {
+        const { tag } = req.body;
+        const userId = req.session.user.userId;
+        const user = await User.findOne({ userId: userId });
 
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.tag == tag) {
+            return res.status(404).json({ message: 'Please choose a different tag' });
+        }
+        // If someone already has this base name, check sequence availability
+        const checkTag = await checkTagAvailability(user.name, tag);
+        if (!checkTag.success) {
+            return res.status(200).json({ message: 'Tag unavailable' });
+        }
+
+        // Append the sequence number (e.g., "username#1", "username#2", etc.)
+        const newUsername = `${user.displayName}#${tag}`;
+
+        // Update the user's name with the new username
+        user.name = newUsername;
+        user.tag = tag;
+        user.updatedAt = Date.now()
+        await user.save();
+
+        // Update session with the new username
+        req.session.user.name = newUsername;
+        req.session.user.tag = tag;
+        return res.status(201).json({ message: `Tag changed successfully to ${tag}` });
+    } catch (error) {
+        console.error('Error changing name:', error);
+        res.status(500).json({ message: 'Error changing name', error: error.message });
+    }
+});
 // Serve static files
 app.use(express.static(path.join(__dirname)));
 

@@ -19,8 +19,11 @@ const deleteacc = document.getElementById("deleteacc");
 const deleteConfirmForm = document.getElementById("deleteConfirmForm");
 const cancelDelete = document.getElementById("cancelDelete");
 const confirmDelete = document.getElementById("confirmDelete");
+const getusername = document.getElementById("getusername");
 const getuser = document.getElementById("getuser");
+const gettag = document.getElementById("gettag");
 const edituser = document.getElementById("edituser");
+const edittag = document.getElementById("edituser");
 const qrCode = document.getElementById("qrCode");
 const dones = document.getElementById("dones");
 // Toggle the visibility of the tooltip when the info icon is clicked
@@ -442,6 +445,45 @@ edituser.addEventListener("click", async () =>{
         }
     }
 })
+edituser.addEventListener("click", async () =>{
+    const usernamePattern = /[^a-zA-Z0-9._]/;
+    const newContent = prompt('Enter your new name');
+    if (newContent.length <= 3 || newContent.length >= 20) {
+        alert("Username must be > 3 and < 20");
+    }else if (usernamePattern.test(newContent) === true) {
+        alert("No special characters are allowed for username, except . and _")
+    }else{
+        try {
+            const response = await fetch('/changeuser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: newContent })
+            });
+            const data = await response.json();
+            alert(data.message)
+        } catch (error) {
+            console.error('Error changing user:', error);
+        }
+    }
+})
+edittag.addEventListener("click", async () =>{
+    const newContent = prompt('Enter your new tag');
+    if (!/^\d{4}$/.test(newContent.value) && newContent.value.length == 4) {
+        alert("Tag must only be Numbers and has the exact length of 4");
+    }else{
+        try {
+            const response = await fetch('/changetag', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tag: newContent })
+            });
+            const data = await response.json();
+            alert(data.message)
+        } catch (error) {
+            console.error('Error changing user:', error);
+        }
+    }
+})
 async function fetching() {
     try {
         const response = await fetch('/users', { credentials: 'same-origin' });
@@ -452,7 +494,9 @@ async function fetching() {
 
         const result = await response.json();
 
-        getuser.textContent = `Username:  ${result.name}`;
+        getusername.textContent = `Username:  ${result.username}`;
+        getusername.textContent = `Username:  ${result.user}`;
+        getusername.textContent = `Username:  ${result.tag}`;
     } catch (error) {
         console.error('Error fetching user info:', error);
     }
