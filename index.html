@@ -139,8 +139,8 @@
         <!-- Form fields and Google Sign-In button -->
         <input id="username" type="text" class="textboxscale" placeholder="Enter Username" autocomplete="username">
         <div style="display: flex; align-items: center;">
-            <input id="tag" type="text" class="tagtextboxscale" placeholder="Enter Tag (e.g.1234)" autocomplete="tag"
-            pattern="\d{4}" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '')">>
+            <input id="tag" type="number" class="tagtextboxscale" placeholder="Enter Tag (e.g.1234)" autocomplete="tag"
+            maxlength="4" >>
             <button id="random" class="random" style="margin-left: 20px;">Random</button>
         </div>
         <input id="email" type="email" class="textboxscale" placeholder="Enter Email" autocomplete="email">
