@@ -89,7 +89,30 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
+    const generateRandomTag = () => {
+        return Math.floor(1000 + Math.random() * 9000).toString(); // generates a 4-digit number
+    };
+    async function getUniqueTag(name) {
+        // Search for the user by name
+        const user = await User.findOne({ name });
     
+        // If user found, check the tag
+        if (user) {
+            let newTag = generateRandomTag();
+            let tagExists = await User.findOne({ tag: newTag });
+    
+            // Check if tag exists, regenerate until it's unique
+            while (tagExists) {
+                newTag = generateRandomTag();
+                tagExists = await User.findOne({ tag: newTag });
+            }
+    
+            // Return the new unique tag
+            return newTag;
+        } else {
+            return generateRandomTag();
+        }
+    }
     // Function to get the next available sequence for a given base username
     async function getNextAvailableUsername(baseName) {
         // Find all usernames that start with the base name and a '#'
@@ -271,6 +294,17 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         try {
             const settings = await Setting.findOne({ userId: parseInt(req.params.userId) });
             res.json({ twoFactorEnabled: settings?.twofac || false });
+        } catch (error) {
+            console.error('Error checking 2FA status:', error);
+            res.status(500).json({ message: 'Error checking 2FA status' });
+        }
+    });
+
+    app.get('availableNum', async (req, res) => {
+        try {
+            const { user } = req.body
+            const tag = await getUniqueTag(user)
+            return res.status(200).json({ tag: tag });
         } catch (error) {
             console.error('Error checking 2FA status:', error);
             res.status(500).json({ message: 'Error checking 2FA status' });

@@ -2,6 +2,8 @@ const username = document.getElementById("username");
 const pass = document.getElementById("password");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
+const tag = document.getElementById("tag");
+const random = document.getElementById("random");
 
 const loginRedirect = document.getElementById('loginRedirect');
 loginRedirect.addEventListener('click', () => {
@@ -26,6 +28,23 @@ async function checkloggedin() {
 }
 checkloggedin();
 
+random.addEventListener("click", async () =>{
+    if (!username.value) {
+        alert("To Randomize a tag, Username field cannot be blank")
+    }
+    try {
+        const user = username.value
+        const response = await fetch("/availableNum", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        })
+        const data = await response.json();
+        tag.value = data.tag
+    }catch(err) {
+        console.log("Error randomizing: ",err)
+    }
+})
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/;
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

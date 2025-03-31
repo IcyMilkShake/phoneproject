@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     twoFactorSecret: { type: String }, // Optional for users enabling 2FA
     google_id: { type: Number }, // Optional for users enabling 2FA
+    tag: {type: Number, required: true}
 }, { timestamps: true }); // This adds createdAt and updatedAt fields automatically
 
 const User = mongoose.model('User', userSchema);
