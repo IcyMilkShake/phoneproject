@@ -494,8 +494,8 @@ async function fetching() {
 
         const result = await response.json();
 
-        getusername.textContent = `Username:  ${result.username}`;
-        getuser.textContent = `DisplayName:  ${result.user}`;
+        getusername.textContent = `Username:  ${result.name}`;
+        getuser.textContent = `DisplayName:  ${result.displayName}`;
         gettag.textContent = `Tag:  ${result.tag}`;
     } catch (error) {
         console.error('Error fetching user info:', error);
