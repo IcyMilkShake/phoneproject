@@ -859,7 +859,7 @@ app.post('/changeuser', async (req, res) => {
         const baseName = username; // Start with the base username
 
         // If someone already has this base name, check sequence availability
-        const sequence = await getUniqueTag(baseName);
+        const sequence = user.tag;
 
         // Append the sequence number (e.g., "username#1", "username#2", etc.)
         const newUsername = `${baseName}#${sequence}`;
