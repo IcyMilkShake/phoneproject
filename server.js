@@ -382,7 +382,6 @@ app.post('/send-email', (req, res) => {
 // API endpoint to fetch users
 app.get('/users', async (req, res) => {
     try {
-        console.log(req.session.user)
         if (!req.session.user) {
             return res.json({ message: 'Please Login First' });
         }
@@ -470,31 +469,6 @@ app.get('/checkloggedin', async (req,res) => {
     }
 })
 
-app.post('/tokenGoogleAuth', async (req, res) => {
-    const { token } = req.body;  // Extract token from the request body
-    console.log("hit")
-    try {
-        // Verify the token received from the client
-        const ticket = await client.verifyIdToken({
-            idToken: token,  // Pass the token from the client here
-            audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-        });
-
-        const payload = ticket.getPayload();
-        const userId = payload.sub; // User ID from Google
-        console.log("hitsas")
-        console.log("hitss")
-        console.log('User ID:', userId);
-
-        // For this example, we simply return the user ID as a successful response
-        res.json({ success: true, userId: userId });
-
-    } catch (error) {
-        console.error('Token verification failed:', error);
-        res.status(401).json({ success: false, message: 'Token verification failed' });
-    }
-});
-
 app.post('/login', async (req, res) => {
     const { name, password, email, token } = req.body;
     try {
@@ -516,9 +490,6 @@ app.post('/login', async (req, res) => {
         if (user.password !== password) {
             return res.status(401).json({ message: 'Invalid username/email or password.' });
         }
-
-        console.log(user.password)
-        console.log(user.google_id)
         // Get user's 2FA settings
         const userSettings = await Setting.findOne({ userId: user.userId });
         // If 2FA is enabled but no token provided, request 2FA
@@ -551,7 +522,6 @@ app.post('/login', async (req, res) => {
 
         // If we get here, either 2FA is disabled or the token was valid
         req.session.user = user; // Set the user in the session
-        console.log(req.session.user)
         res.status(200).json({ 
             message: 'Login successful!', 
             redirectUrl: '/main.html',
@@ -602,7 +572,6 @@ app.post('/reset_resetpass', async (req, res) => {
         // Update the password
         user.password = password;
         user.updatedAt = Date.now()
-        console.log(password);
         await user.save();
 
         // Clear the session once the password is reset
@@ -625,7 +594,6 @@ app.post('/deleteaccount', async (req, res) => {
         }
 
         const session_user = req.session.user;
-        console.log("Session User:", session_user);
 
         const user = await User.findOne({ name: session_user.name });
 
