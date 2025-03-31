@@ -33,7 +33,7 @@ random.addEventListener("click", async () =>{
         alert("To Randomize a tag, Username field cannot be blank")
     }
     try {
-        const user = username.value
+        const user = { name: username.value }
         const response = await fetch("/availableNum", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
