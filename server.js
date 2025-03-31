@@ -89,6 +89,32 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
+    async function checkTagAvailability(name, tag) {
+        try {
+            // Find any user with the same name
+            const existingUser = await User.findOne({ name });
+    
+            if (!existingUser) {
+                // If no user with this name exists, return success
+                return { success: true, message: "Tag is available." };
+            }
+    
+            // If there is a user with the same name, check if the provided tag exists for them
+            const userWithTag = await User.findOne({ name, tag });
+    
+            if (userWithTag) {
+                // If a user with the same name already has the provided tag, return error
+                return { success: false, error: "The tag is already taken by this user." };
+            }
+    
+            // Otherwise, tag is available
+            return { success: true, message: "Tag is available." };
+        } catch (error) {
+            console.error("Error checking tag availability:", error);
+            return { success: false, error: "An error occurred while checking the tag." };
+        }
+    }
+
     const generateRandomTag = () => {
         return Math.floor(1000 + Math.random() * 9000).toString(); // generates a 4-digit number
     };
@@ -113,34 +139,6 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             return generateRandomTag();
         }
     }
-    // Function to get the next available sequence for a given base username
-    async function getNextAvailableUsername(baseName) {
-        // Find all usernames that start with the base name and a '#'
-        const existingNames = await User.find({ name: { $regex: `^${baseName}#\\d+` } })
-                                        .sort({ name: 1 }); // Sort names in ascending order
-
-        let sequence = 1; // Start with #1
-        
-        // If there are existing names, find the next available number
-        if (existingNames.length > 0) {
-            // Loop through existing names to find the first missing sequence number
-            for (let i = 0; i < existingNames.length; i++) {
-                // Extract the numeric part of the name (e.g., 'name#1' -> 1)
-                const currentSequence = parseInt(existingNames[i].name.split('#')[1], 10);
-
-                // If there's a gap, use that number
-                if (currentSequence !== sequence) {
-                    break;
-                }
-
-                // Otherwise, move to the next number in the sequence
-                sequence++;
-            }
-        }
-
-        return sequence; // Return the next available sequence number
-    }
-
 
     async function getNextSequenceValue(sequenceName) {
         const maxUserId = await User.find().sort({ userId: -1 }).limit(1).select('userId');
@@ -176,7 +174,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 return done(null, user)
             } else {
                 const userId = await getNextSequenceValue('userId');
-                const sequence = await getNextAvailableUsername(profile.displayName);
+                const sequence = await getUniqueTag(profile.displayName);
                 const profilePicturePath = profile.photos[0].value || '/uploads/profile_pics/default-profile.png';
                 // If no user with this email exists, create a new user with Google info
                 newUser = new User({
@@ -189,6 +187,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                         path: profilePicturePath,      // Profile picture URL
                         contentType: 'image/png',      // Default content type
                     },
+                    tag: sequence,
                 });
                 await newUser.save();
     
@@ -216,8 +215,9 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
             const profilePicturePath = user.profilePicture.path;
             req.session.user = {
                 userId: user.userId,               // Database userId
-                name: req.user.name,         // Google display name
-                email: req.user.email,              // Google email
+                name: user.name,
+                displayName: user.displayName,         // Google display name
+                email: user.email,              // Google email
                 profilePicture: {
                     path: profilePicturePath,      // Profile picture URL
                     contentType: 'image/png',      // Default content type
@@ -225,6 +225,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 google_id: req.user.sub,           // Google user ID
                 createdAt: user.createdAt,         // Database createdAt
                 updatedAt: user.updatedAt,         // Database updatedAt
+                tag: user.tag,
             };
             
             // Verify if session data is saved
@@ -402,15 +403,18 @@ app.get('/testing',async (req, res) => {
 });
 // POST endpoint to create a new user
 app.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, tag } = req.body;
     try {
         // Check if name already exists (without # suffix)
         let baseName = name;
         let displayName = name
         // Get the next available sequence number
-        const sequence = await getNextAvailableUsername(baseName);
+        const availability = await checkTagAvailability(displayName, tag)
+        if (!availability.success) {
+            return res.status(200).json({ message: 'Tag unavailable' });
+        }
         // Append the sequence number (e.g., "username#1", "username#2", etc.)
-        baseName = `${baseName}#${sequence}`;
+        baseName = `${baseName}#${tag}`;
 
         // Check if email already exists
         const existingEmail = await User.findOne({ email });
@@ -439,6 +443,7 @@ app.post('/signup', async (req, res) => {
             email,
             password,
             profilePicture: { path: defaultProfilePicture, contentType: 'image/png' }, // Default profile picture
+            tag: tag,
         });
 
         await newUser.save(); // Save to the database
@@ -854,7 +859,7 @@ app.post('/changeuser', async (req, res) => {
         const baseName = username; // Start with the base username
 
         // If someone already has this base name, check sequence availability
-        const sequence = await getNextAvailableUsername(baseName);
+        const sequence = await getUniqueTag(baseName);
 
         // Append the sequence number (e.g., "username#1", "username#2", etc.)
         const newUsername = `${baseName}#${sequence}`;

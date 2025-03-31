@@ -65,8 +65,12 @@ submit.addEventListener('click', async () => {
         alert("Password must be at least 6 characters long");
         return;
     }
+    if (/^\d+$/.test(tag.value) == false || tag.value.length == 4) {
+        alert("Tag must only be Numbers and has the exact length of 4");
+        return;
+    }
     
-    const userData = { name: username.value, email: email.value, password: pass.value };
+    const userData = { name: username.value, email: email.value, password: pass.value, tag: tag.value};
     
     try {
         const response = await fetch('/signup', {
@@ -78,8 +82,10 @@ submit.addEventListener('click', async () => {
         
         if (response.ok && result.message === 'User created successfully!') {
             window.location.href = "login.html";
+        }else if (result.message === "Tag unavailable") {
+            alert("Cannot use this tag")
         }
-        username.value = ''; email.value = ''; pass.value = '';
+        username.value = ''; email.value = ''; pass.value = ''; tag.value = '';
     } catch (error) {
         console.error('Error adding user:', error);
     }
