@@ -440,6 +440,7 @@ edituser.addEventListener("click", async () =>{
             });
             const data = await response.json();
             alert(data.message)
+            location.reload();
         } catch (error) {
             console.error('Error changing user:', error);
         }
@@ -458,6 +459,7 @@ edittag.addEventListener("click", async () =>{
             });
             const data = await response.json();
             alert(data.message)
+            location.reload();
         } catch (error) {
             console.error('Error changing user:', error);
         }
