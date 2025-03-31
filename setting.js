@@ -445,27 +445,6 @@ edituser.addEventListener("click", async () =>{
         }
     }
 })
-edituser.addEventListener("click", async () =>{
-    const usernamePattern = /[^a-zA-Z0-9._]/;
-    const newContent = prompt('Enter your new name');
-    if (newContent.length <= 3 || newContent.length >= 20) {
-        alert("Username must be > 3 and < 20");
-    }else if (usernamePattern.test(newContent) === true) {
-        alert("No special characters are allowed for username, except . and _")
-    }else{
-        try {
-            const response = await fetch('/changeuser', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: newContent })
-            });
-            const data = await response.json();
-            alert(data.message)
-        } catch (error) {
-            console.error('Error changing user:', error);
-        }
-    }
-})
 edittag.addEventListener("click", async () =>{
     const newContent = prompt('Enter your new tag');
     if (!/^\d{4}$/.test(newContent.value) && newContent.value.length == 4) {
