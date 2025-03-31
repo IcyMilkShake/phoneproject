@@ -10,7 +10,11 @@ loginButton.addEventListener('click', async () => {
     try {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isEmail = emailPattern.test(username.value);
-        
+        const hasTag = /#\d{4}$/;
+        if (!hasTag.test(username.value)) {
+            console.log("You forgot the tag behind ur name :))) (e.g.BallsDestroyer#1234)");
+        }
+
         const loginData = {
             name: username.value,
             password: password.value,
