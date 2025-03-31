@@ -45,6 +45,7 @@ random.addEventListener("click", async () =>{
         console.log("Error randomizing: ",err)
     }
 })
+
 submit.addEventListener('click', async () => {
     const usernamePattern = /[^a-zA-Z0-9._]/;
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -65,7 +66,7 @@ submit.addEventListener('click', async () => {
         alert("Password must be at least 6 characters long");
         return;
     }
-    if (/^\d+$/.test(tag.value) == false || tag.value.length == 4) {
+    if (!/^\d{4}$/.test(tag.value) && tag.value.length == 4) {
         alert("Tag must only be Numbers and has the exact length of 4");
         return;
     }
