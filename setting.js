@@ -23,7 +23,7 @@ const getusername = document.getElementById("getusername");
 const getuser = document.getElementById("getuser");
 const gettag = document.getElementById("gettag");
 const edituser = document.getElementById("edituser");
-const edittag = document.getElementById("edituser");
+const edittag = document.getElementById("edittag");
 const qrCode = document.getElementById("qrCode");
 const dones = document.getElementById("dones");
 // Toggle the visibility of the tooltip when the info icon is clicked
