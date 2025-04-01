@@ -22,7 +22,7 @@ const PORT = 8080;
 
 app.use(express.json());
 app.use(cors());
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());  // Middleware to parse cookies
 app.use((req, res, next) => {
@@ -61,7 +61,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 50 * 4096 * 4096 } // 5MB file size limit
+    limits: { fileSize: 25 * 1024 * 1024 } // 5MB file size limit
 });
 const transporter = nodemailer.createTransport({
     service: 'gmail',
