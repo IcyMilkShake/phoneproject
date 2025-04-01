@@ -14,6 +14,8 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const sharp = require("sharp");
+const fs = require("fs");
 
 const app = express();
 const PORT = 8080;
