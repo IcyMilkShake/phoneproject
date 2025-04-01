@@ -779,7 +779,6 @@ app.get('/user/profile', async (req, res) => {
     }
 });
 
-
 app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
@@ -791,8 +790,23 @@ app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) =>
         }
 
         const userId = req.session.user.userId;
-        const imagePath = `/uploads/profile_pics/${req.file.filename}`;
+        const originalImagePath = req.file.path;
 
+        // Read the image's dimensions
+        const image = sharp(originalImagePath);
+        const metadata = await image.metadata();
+
+        // If the width is too large (e.g., greater than 1024px), resize it
+        let resizedImagePath = originalImagePath;
+        if (metadata.width > 1024) {
+            resizedImagePath = path.join(__dirname, 'uploads/profile_pics', `resized-${req.file.filename}`);
+            await image.resize(1024).toFile(resizedImagePath);
+            fs.unlinkSync(originalImagePath); // Delete the original file after resizing
+        }
+
+        const imagePath = `/uploads/profile_pics/${path.basename(resizedImagePath)}`;
+
+        // Update user profile with the resized image path
         const result = await User.findOneAndUpdate(
             { userId: userId },
             { profilePicture: { path: imagePath, contentType: req.file.mimetype } },
@@ -809,6 +823,7 @@ app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) =>
         res.status(500).json({ message: 'Error uploading profile picture' });
     }
 });
+
 
 app.post('/changeuser', async (req, res) => {
     try {
