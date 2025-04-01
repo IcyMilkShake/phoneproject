@@ -20,7 +20,6 @@ const PORT = 8080;
 
 app.use(express.json());
 app.use(cors());
-app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());  // Middleware to parse cookies
@@ -784,6 +783,12 @@ app.get('/user/profile', async (req, res) => {
 app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
+    }
+    if (err) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ message: 'File size exceeds the limit of 5MB' });
+        }
+        return res.status(500).json({ message: 'Error uploading file' });
     }
 
     try {
