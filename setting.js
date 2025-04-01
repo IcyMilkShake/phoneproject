@@ -296,37 +296,79 @@ let cropper;
 fileInput.addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file) {
-        if (file.size > 25 * 1024 * 1024) {
-            alert('File is too large. Maximum size is 5MB');
+        // Check file size (50MB as an example)
+        if (file.size > 50 * 1024 * 1024) {
+            alert('File is too large. Maximum size is 50MB');
             return;
         }
 
         const reader = new FileReader();
         reader.onload = function (e) {
-            imageToCrop.src = e.target.result;
-            cropModal.style.display = 'flex';
+            const img = new Image();
+            img.onload = function () {
+                // Resize the image if necessary
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
 
-            if (cropper) {
-                cropper.destroy();
-            }
+                // Set new dimensions for the image (max width or height)
+                const maxWidth = 1024;
+                const maxHeight = 1024;
+                let width = img.width;
+                let height = img.height;
 
-            cropper = new Cropper(imageToCrop, {
-                aspectRatio: 1,
-                viewMode: 2, // Change to viewMode 2
-                dragMode: 'move',
-                autoCropArea: 1,
-                restore: false,
-                modal: true,
-                guides: true,
-                highlight: false,
-                cropBoxMovable: true,
-                cropBoxResizable: true,
-                toggleDragModeOnDblclick: false,
-                responsive: true,
-                checkCrossOrigin: false
-            });
+                // Resize the image while maintaining aspect ratio
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round(width * (maxHeight / height));
+                        height = maxHeight;
+                    }
+                }
+
+                // Set canvas size to the new dimensions
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert the canvas to a Blob
+                canvas.toBlob(function (blob) {
+                    const resizedFile = new File([blob], 'profile-pic.png', { type: 'image/png' });
+
+                    // Load the resized image into the cropper
+                    const resizedImageUrl = URL.createObjectURL(resizedFile);
+                    imageToCrop.src = resizedImageUrl;
+
+                    cropModal.style.display = 'flex';
+
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+
+                    // Initialize Cropper.js with the resized image
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 1,
+                        viewMode: 2, // Change to viewMode 2
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        restore: false,
+                        modal: true,
+                        guides: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                        responsive: true,
+                        checkCrossOrigin: false
+                    });
+                }, 'image/png');
+            };
+            img.src = e.target.result; // Start loading the image for resizing
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file); // Read the file as a data URL
     }
 });
 
