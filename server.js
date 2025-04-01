@@ -302,10 +302,10 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         }
     });
 
-    app.post('availableNum', async (req, res) => {
+    app.post('/availableNum', async (req, res) => {
         try {
-            const { user } = req.body
-            const tag = await getUniqueTag(user)
+            const { name } = req.body
+            const tag = await getUniqueTag(name)
             return res.status(200).json({ tag: tag });
         } catch (error) {
             console.error('Error checking 2FA status:', error);
