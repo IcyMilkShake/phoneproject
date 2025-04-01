@@ -11,7 +11,7 @@ loginButton.addEventListener('click', async () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isEmail = emailPattern.test(username.value);
         const hasTag = /#\d{4}$/;
-        if (!hasTag.test(username.value)) {
+        if (!hasTag.test(username.value) && !emailPattern.test(username.value)) {
             alert("You must include # and a 4 number digit behind your name :))) (e.g.BallsDestroyer#1234)");
             return
         }
