@@ -61,7 +61,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB file size limit
+    limits: { fileSize: 5 * 2048 * 2048 } // 5MB file size limit
 });
 const transporter = nodemailer.createTransport({
     service: 'gmail',
