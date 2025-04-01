@@ -785,7 +785,6 @@ app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) =>
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
     }
-    console.log("Hi worl D")
     try {
         if (!req.session.user) {
             return res.status(401).json({ message: 'Not logged in' });
@@ -803,7 +802,6 @@ app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) =>
         if (metadata.width > 1024) {
             resizedImagePath = path.join(__dirname, 'uploads/profile_pics', `resized-${req.file.filename}`);
             await image.resize(1024).toFile(resizedImagePath);
-            console.log("resized")
             fs.unlinkSync(originalImagePath); // Delete the original file after resizing
         }
 
