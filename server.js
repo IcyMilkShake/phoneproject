@@ -302,7 +302,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
         }
     });
 
-    app.get('availableNum', async (req, res) => {
+    app.post('availableNum', async (req, res) => {
         try {
             const { user } = req.body
             const tag = await getUniqueTag(user)

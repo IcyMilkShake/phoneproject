@@ -35,7 +35,7 @@ random.addEventListener("click", async () =>{
     try {
         const user = { name: username.value }
         const response = await fetch("/availableNum", {
-            method: 'GET',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(user)
         })
