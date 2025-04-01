@@ -12,8 +12,8 @@ loginButton.addEventListener('click', async () => {
         const isEmail = emailPattern.test(username.value);
         const hasTag = /#\d{4}$/;
         if (!hasTag.test(username.value)) {
-            alert("You forgot the tag behind ur name :))) (e.g.BallsDestroyer#1234)");
-            return
+            alert("You must include # and a 4 number digit behind your name :))) (e.g.BallsDestroyer#1234)");
+            ret
         }
 
         const loginData = {
