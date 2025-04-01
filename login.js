@@ -13,7 +13,7 @@ loginButton.addEventListener('click', async () => {
         const hasTag = /#\d{4}$/;
         if (!hasTag.test(username.value)) {
             alert("You must include # and a 4 number digit behind your name :))) (e.g.BallsDestroyer#1234)");
-            ret
+            return
         }
 
         const loginData = {
