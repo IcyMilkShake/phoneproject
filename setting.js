@@ -358,6 +358,7 @@ async function uploadProfilePic(file) {
     formData.append('profilePic', file);
 
     try {
+        console.log("yasss queen")
         const response = await fetch('/upload-profile-pic', {
             method: 'POST',
             body: formData,
