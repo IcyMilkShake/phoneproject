@@ -6,7 +6,6 @@ const loginSection = document.getElementById("loginSection");
 const verifyButton = document.getElementById("verifyCode");
 
 loginButton.addEventListener('click', async () => {
-    console.log("aaa");
     try {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isEmail = emailPattern.test(username.value);
