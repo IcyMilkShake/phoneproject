@@ -13,7 +13,6 @@ loginRedirect.addEventListener('click', () => {
 async function checkloggedin() {
     try {
         const response = await fetch('/checkloggedin', { credentials: 'same-origin' });
-
         const data = await response.json();
 
         if (data.message == "You are already logged in. Redirecting to the main page...") {
@@ -31,6 +30,7 @@ checkloggedin();
 random.addEventListener("click", async () =>{
     if (!username.value) {
         alert("To Randomize a tag, Username field cannot be blank")
+        return
     }
     try {
         const user = { name: username.value }
