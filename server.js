@@ -177,7 +177,7 @@ mongoose.connect('mongodb+srv://milkshake:t5975878@cluster0.k5dmweu.mongodb.net/
                 const profilePicturePath = profile.photos[0].value || '/uploads/profile_pics/default-profile.png';
                 // If no user with this email exists, create a new user with Google info
                 const removedSpace = profile.displayName.replace(/\s+/g, ''); // Fix here
-                newUser = new User({
+                var newUser = new User({
                     userId,
                     google_id: profile.id,      // Store Google ID
                     name: `${removedSpace}#${sequence}`,   // Override the name with Google name
